@@ -172,6 +172,7 @@ header, main, footer {
 }
 .signin-column-one > label {
   margin: .2rem 0 .2rem auto;
+  padding: .1rem 0;
   display: block;
   font-size: .9rem;
   font-weight: 600;
@@ -198,7 +199,7 @@ header, main, footer {
   outline: none;
   border: none;
   border-radius: 5%;
-  background-color: #dee7da;
+  background-color: #ebf0e8;
 }
 .signin-column-two > input::placeholder {
   color:#b0b0b0;
@@ -207,6 +208,7 @@ header, main, footer {
 .signin-column-two > input:focus {
   outline: 2px solid rgba(168, 203, 255, .5);
   color: #023047;
+  background-color: #dee7da;
 }
 .signin-footer {
   box-sizing: border-box;
@@ -238,6 +240,7 @@ header, main, footer {
   margin: .3rem 10% 0;
   color: #007bb6;
   font-size: .9rem;
+  cursor: pointer;
 }
 .signin-footer > p:hover {
   color: #06f;

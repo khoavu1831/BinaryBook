@@ -275,7 +275,7 @@ const createAdmin = () => {
     let user = {
       username: "admin",
       password: "admin",
-      fullname: "Mai Trần Tuấn Kiệt",
+      fullName: "Mai Trần Tuấn Kiệt",
       address: "273 An Dương Vương, P3, Q5, TP.HCM",
       phone: "0559413699",
       signupSince: "04-06-2004",
@@ -730,12 +730,12 @@ const showSigninSection = () => {
   const signinBtn = document.createElement("button");
   signinBtn.innerText = "Đăng nhập ngay";
 
-  const toRegister = document.createElement("p");
-  toRegister.innerText = "Chưa có tài khoản? Nhấn vào đây để đăng ký";
+  const toSignup = document.createElement("p");
+  toSignup.innerText = "Chưa có tài khoản? Nhấn vào đây để đăng ký";
 
   const footer = document.createElement("footer");
   footer.classList.add("signin-footer");
-  footer.append(signinBtn, toRegister);
+  footer.append(signinBtn, toSignup);
 
   const signinSection = document.createElement("section");
   signinSection.classList.add("signin-section", "normal-box");
@@ -746,7 +746,82 @@ const showSigninSection = () => {
     signinSection.remove();
   });
   signinBtn.addEventListener("click", signin);
+  toSignup.addEventListener("click", () => {
+    signinSection.remove();
+    showSignupSection();
+  });
 };
+// Hàm thực hiện đăng ký
+const signup = () => {
+  const fullName = document.getElementById("fullName");
+  const address = document.getElementById("address");
+  const phone = document.getElementById("phone");
+  const username = document.getElementById("username");
+  const password = document.getElementById("password");
+  const repassword = document.getElementById("repassword");
+};
+// Hàm để hiển thị phần đăng ký
+const showSignupSection = () => {
+  // signup-header
+  const title = document.createElement("h1");
+  title.innerText = "Tạo tài khoản mới!";
+  const closeBtn = document.createElement("button");
+  closeBtn.innerText = "+";
+
+  const header = document.createElement("header");
+  header.classList.add("signin-header");
+  header.append(title, closeBtn);
+
+  // signup-main
+  const form = document.createElement("form");
+  form.innerHTML = `
+    <div class="signin-column-one">
+      <label for="fullName">Nhập họ và tên:</label>
+      <label for="address">Nhập địa chỉ:</label>
+      <label for="phone">Nhập số điện thoại:</label>
+      <label for="username">Nhập tên đăng nhập:</label>
+      <label for="password">Nhập mật khẩu:</label>
+      <label for="repassword">Nhập lại mật khẩu:</label>
+    </div>
+    <div class="signin-column-two">
+      <input type="text" placeholder="Họ và tên" id="fullName" required />
+      <input type="text" placeholder="Địa chỉ" id="address" required />
+      <input type="text" placeholder="Số điện thoại" id="phone" required />
+      <input type="text" placeholder="Tên đăng nhập" id="username" required />
+      <input type="password" placeholder="Mật khẩu" id="password" required />
+      <input type="password" placeholder="Nhập lại mật khẩu" id="repassword" required />
+    </div>
+  `;
+  const main = document.createElement("main");
+  main.classList.add("signin-main");
+  main.append(form);
+
+  // signup-footer
+  const signinBtn = document.createElement("button");
+  signinBtn.innerText = "Đăng kí ngay";
+
+  const toSignin = document.createElement("p");
+  toSignin.innerText = "Đã có tài khoản? Nhấn vào đây để đăng nhập";
+
+  const footer = document.createElement("footer");
+  footer.classList.add("signin-footer");
+  footer.append(signinBtn, toSignin);
+
+  const signupSection = document.createElement("section");
+  signupSection.classList.add("signin-section", "normal-box");
+  signupSection.append(header, main, footer);
+  document.body.append(signupSection);
+
+  closeBtn.addEventListener("click", () => {
+    signupSection.remove();
+  });
+  signinBtn.addEventListener("click", signin);
+  toSignin.addEventListener("click", () => {
+    signupSection.remove();
+    showSigninSection();
+  });
+};
+// GỌI CÁC HÀM
 createProducts();
 createAdmin();
 showProducts();
@@ -764,7 +839,7 @@ document.querySelector("#signin").addEventListener("click", (event) => {
   showSigninSection();
 });
 
-// PHẦN NÀY CHO PHẦN SLIDESHOW
+// PHẦN NÀY ĐỂ HIỂN THỊ SLIDESHOW
 let slideshowImgIdx = 1;
 const slideshowContainer = document.querySelector(".slideshow");
 const changeImg = () => {
@@ -782,7 +857,6 @@ const changeImg = () => {
 const changeHeaderNavArea = () => {
   window.addEventListener("resize", () => {
     const width = window.innerWidth;
-
     const signin = document.querySelector("#signin");
     if (width <= 768 && signin.classList.contains("signin")) {
       signin.classList.toggle("navigation");
@@ -796,10 +870,11 @@ const changeHeaderNavArea = () => {
   });
 };
 const width = window.innerWidth;
-if (width <= 1024 && signin.classList.contains("signin")) {
-  signin.classList.toggle("navigation");
-  signin.classList.toggle("signin");
-  signin.innerHTML = '<ion-icon name="log-in-outline"></ion-icon>';
+const signinId = document.querySelector("#signin");
+if (width <= 1024 && signinId.classList.contains("signin")) {
+  signinId.classList.toggle("navigation");
+  signinId.classList.toggle("signin");
+  signinId.innerHTML = '<ion-icon name="log-in-outline"></ion-icon>';
 }
 
 // ONLOAD
