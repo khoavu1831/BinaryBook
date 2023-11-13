@@ -284,8 +284,6 @@ const createAdmin = () => {
     localStorage.setItem("users", JSON.stringify(users));
   }
 };
-// Hàm kiểm tra chuỗi rỗng hoặc chir chứa khoảng trắng
-const isEmptyStringOrWhiteSpaces = (string) => string.trim().length === 0;
 // Hàm kiểm tra một chuỗi có phải là số điện thoại hợp lệ hay không
 const isValidPhoneNumber = (phoneNumber) => {
   const regex = /^0[35789]\d{8}$/;
@@ -524,6 +522,7 @@ const addShowMoreDetailsEvent = (ctn) => {
   container.addEventListener("click", (event) => {
     const img = event.target.closest(".product-image");
     if (img) {
+      document.querySelector(".hide-screen").style.display = "block";
       const product = img.closest(".product");
       const bookId = product.id; // Lấy id của sách từ id của div.product
       const book = [...bestSellerBooks, ...wellKnownBooks].find(
@@ -561,7 +560,8 @@ const addShowMoreDetailsEvent = (ctn) => {
       container.append(moreDetails); // hiển thị nó
 
       closeBtn.addEventListener("click", () => {
-        moreDetails.remove(); // xóa moreDetails khỏi DOM
+        moreDetails.remove();
+        document.querySelector(".hide-screen").style.display = "none";
       });
     }
   });
@@ -607,9 +607,12 @@ const showSearchResults = (books) => {
   const btn = document.createElement("button");
   btn.innerText = "Tìm kiếm";
 
+  const closeBtn = document.createElement("button");
+  closeBtn.classList.add("signin-close-button");
+  closeBtn.innerText = "+";
+
   const searchForm = document.createElement("form");
   searchForm.classList.add("search-box");
-  searchForm.id = "search-again";
   searchForm.append(input, btn);
 
   const filter = document.createElement("div");
@@ -639,23 +642,20 @@ const showSearchResults = (books) => {
     const category = filter.querySelector(".filter-category").value;
     let fromPrice = filter.querySelector("#from-price").value;
     let toPrice = filter.querySelector("#to-price").value;
-    if (fromPrice === "" && toPrice === "") {
+    if (!fromPrice && !toPrice) {
       fromPrice = "0";
       toPrice = "999999999";
     }
-    console.log("fn:" + fromPrice);
-    console.log("fn:" + toPrice);
-    console.log("fn:" + category);
 
     const books = searchBooks(keyword, category, fromPrice, toPrice);
-    console.log(books);
+
     showSearchResults(books);
     searchResults.remove();
   });
 
   const safArea = document.createElement("div");
   safArea.classList.add("saf-area");
-  safArea.append(searchForm, filter);
+  safArea.append(searchForm, filter, closeBtn);
 
   // div.saf-products
   const products = document.createElement("div");
@@ -664,19 +664,22 @@ const showSearchResults = (books) => {
     products.append(createProductDiv(book));
   }
 
-  // button.close-btn
-  const closeBtn = document.createElement("button");
-  closeBtn.classList.add("saf-close");
-  closeBtn.innerText = "Đóng Tìm Kiếm";
-  closeBtn.addEventListener("click", () => {
-    searchResults.remove(); // xóa searchResults khỏi DOM
-  });
+  // const nav = document.createElement("nav");
+  // nav.classList(".pagination");
+  // products.append(nav);
+
+  // paginate(".saf-products", books);
 
   // section.search-and-filter
   const searchResults = document.createElement("section");
   searchResults.classList.add("search-and-filter", "full-screen-box");
-  searchResults.append(safArea, products, closeBtn);
-  document.querySelector(".main").append(searchResults); // hiển thị nó
+  searchResults.append(safArea, products);
+  document.querySelector(".main").append(searchResults);
+
+  // close-button
+  closeBtn.addEventListener("click", () => {
+    searchResults.remove();
+  });
 };
 
 // PHẦN NÀY CỦA CHỨC NĂNG ĐĂNG NHẬP ĐĂNG KÝ
@@ -708,10 +711,12 @@ const signin = () => {
 };
 // Hàm để hiển thị phần đăng nhập
 const showSigninSection = () => {
+  document.querySelector(".hide-screen").style.display = "block";
   // signin-header
   const title = document.createElement("h1");
   title.innerText = "Chào mừng bạn quay trở lại!";
   const closeBtn = document.createElement("button");
+  closeBtn.classList.add("signin-close-button");
   closeBtn.innerText = "+";
 
   const header = document.createElement("header");
@@ -752,6 +757,7 @@ const showSigninSection = () => {
 
   closeBtn.addEventListener("click", () => {
     signinSection.remove();
+    document.querySelector(".hide-screen").style.display = "none";
   });
   signinBtn.addEventListener("click", signin);
   toSignup.addEventListener("click", () => {
@@ -834,10 +840,12 @@ const signup = () => {
 };
 // Hàm để hiển thị phần đăng ký
 const showSignupSection = () => {
+  document.querySelector(".hide-screen").style.display = "block";
   // signup-header
   const title = document.createElement("h1");
   title.innerText = "Tạo tài khoản mới!";
   const closeBtn = document.createElement("button");
+  closeBtn.classList.add("signin-close-button");
   closeBtn.innerText = "+";
 
   const header = document.createElement("header");
@@ -886,6 +894,7 @@ const showSignupSection = () => {
 
   closeBtn.addEventListener("click", () => {
     signupSection.remove();
+    document.querySelector(".hide-screen").style.display = "none";
   });
   signupBtn.addEventListener("click", signup);
   toSignin.addEventListener("click", () => {
