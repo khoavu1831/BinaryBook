@@ -349,27 +349,7 @@ header, main, footer {
   align-items: center;
   overflow: scroll;
   padding: 2% 10%;
-  background-color: rgba(230, 230, 230, .95)
 }
-/* .saf-close {
-  height: 5%;
-  width: 20%;
-  padding: 0 10px;
-  margin: .5rem auto;
-  text-transform: uppercase;
-  font-size: .7rem;
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 700;
-  color: white;
-  background-color: #e16d00;
-  border: none;
-  border-radius: .6rem;
-  text-align: center;
-  line-height: 2;
-}
-.saf-close:hover {
-  background-color: #ff8b1e;
-} */
 /* kết thúc search-and-filter */
 
 /* bắt đầu more-details*/  

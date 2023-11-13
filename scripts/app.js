@@ -356,25 +356,69 @@ const createProductDiv = (book) => {
   // tra ve div bao quat
   return productDiv;
 };
-// Hàm hiển thị các sản phẩm lên trang web
+// Hàm để thêm sách vào vùng chứa
+const addBooksToContainer = (containerSelector, books) => {
+  const productsContainer = document.querySelector(containerSelector);
+  for (book of books) {
+    productsContainer.append(createProductDiv(book));
+  }
+};
+// Hàm để hiển thị sách cho trang hiện tại
+const displayPage = (containerSelector, books) => {
+  const productsContainer = document.querySelector(
+    containerSelector + " .products"
+  );
+  productsContainer.innerHTML = ""; // Xóa sách trang hiện tại
+  for (let book of books) {
+    productsContainer.append(createProductDiv(book)); // Thêm sách mới
+  }
+};
+// Hàm để phân trang cho một vùng chứa sản phẩm
+const paginate = (containerSelector, books, booksPerPage) => {
+  // Chia mảng books thành các trang
+  const pages = [];
+  for (let i = 0; i < books.length; i += booksPerPage) {
+    pages.push(books.slice(i, i + booksPerPage));
+  }
+  // Tạo các liên kết phân trang
+  const pagination = document.querySelector(containerSelector + " .pagination");
+  pagination.innerHTML = ""; // Xóa liên kết phân trang hiện tại
+  for (let i = 0; i < pages.length; i++) {
+    const link = document.createElement("a");
+    link.href = "#";
+    link.innerText = i + 1;
+    link.classList.add("paginating-link");
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+
+      // Xóa kiểu CSS của trang hiện tại
+      const currentLink = pagination.querySelector(".current-page");
+      if (currentLink) {
+        currentLink.classList.remove("current-page");
+      }
+
+      // Cập nhật trang hiện tại và áp dụng kiểu CSS
+      currentPage = i;
+      link.classList.add("current-page");
+
+      displayPage(containerSelector, pages[i]);
+    });
+    pagination.appendChild(link); // Thêm liên kết phân trang vào
+  }
+
+  // Hiển thị trang đầu tiên
+  displayPage(containerSelector, pages[0]);
+  pagination.querySelector(".paginating-link").classList.add("current-page"); // Áp dụng kiểu CSS cho trang đầu tiên
+};
+// Hàm hiển thị sách lên trang web
 const showProducts = () => {
   // Thêm sách vào vùng chứa best-seller-----------------
   const bestSellerBooks = JSON.parse(localStorage.getItem("bestSellerBooks"));
-  const bestSellerProductsContainer = document.querySelector(
-    ".best-seller .products"
-  );
-  for (book of bestSellerBooks) {
-    bestSellerProductsContainer.append(createProductDiv(book));
-  }
+  addBooksToContainer(".best-seller .products", bestSellerBooks);
 
   // Thêm sách vào vùng chứa well-known--------------------
   const wellKnownBooks = JSON.parse(localStorage.getItem("wellKnownBooks"));
-  const wellKnownProductsContainer = document.querySelector(
-    ".well-known .products"
-  );
-  for (book of wellKnownBooks) {
-    wellKnownProductsContainer.append(createProductDiv(book));
-  }
+  addBooksToContainer(".well-known .products", wellKnownBooks);
 
   // PHẦN NÀY ĐỂ PHÂN TRANG
   const width = window.innerWidth;
@@ -396,63 +440,13 @@ const showProducts = () => {
     else booksPerPage = 8;
 
     // Gọi lại hàm paginate sau khi booksPerPage thay đổi
-    paginate(".best-seller", bestSellerBooks);
-    paginate(".well-known", wellKnownBooks);
+    paginate(".best-seller", bestSellerBooks, booksPerPage);
+    paginate(".well-known", wellKnownBooks, booksPerPage);
   });
-  // Hàm để phân trang cho một vùng chứa sản phẩm
-  const paginate = (containerSelector, books) => {
-    // Chia mảng books thành các trang
-    const pages = [];
-    for (let i = 0; i < books.length; i += booksPerPage) {
-      pages.push(books.slice(i, i + booksPerPage));
-    }
-    // Tạo các liên kết phân trang
-    const pagination = document.querySelector(
-      containerSelector + " .pagination"
-    );
-    pagination.innerHTML = ""; // Xóa liên kết phân trang hiện tại
-    for (let i = 0; i < pages.length; i++) {
-      const link = document.createElement("a");
-      link.href = "#";
-      link.innerText = i + 1;
-      link.classList.add("paginating-link");
-      link.addEventListener("click", (event) => {
-        event.preventDefault();
-
-        // Xóa kiểu CSS của trang hiện tại
-        const currentLink = pagination.querySelector(".current-page");
-        if (currentLink) {
-          currentLink.classList.remove("current-page");
-        }
-
-        // Cập nhật trang hiện tại và áp dụng kiểu CSS
-        currentPage = i;
-        link.classList.add("current-page");
-
-        displayPage(containerSelector, pages[i]);
-      });
-      pagination.appendChild(link); // Thêm liên kết phân trang vào
-    }
-
-    // Hiển thị trang đầu tiên
-    displayPage(containerSelector, pages[0]);
-    pagination.querySelector(".paginating-link").classList.add("current-page"); // Áp dụng kiểu CSS cho trang đầu tiên
-  };
-
-  // Hàm để hiển thị sách cho trang hiện tại
-  const displayPage = (containerSelector, books) => {
-    const productsContainer = document.querySelector(
-      containerSelector + " .products"
-    );
-    productsContainer.innerHTML = ""; // Xóa sách trang hiện tại
-    for (let book of books) {
-      productsContainer.append(createProductDiv(book)); // Thêm sách mới
-    }
-  };
 
   // Phân trang cho bestSellerBooks và wellKnownBooks
-  paginate(".best-seller", bestSellerBooks);
-  paginate(".well-known", wellKnownBooks);
+  paginate(".best-seller", bestSellerBooks, booksPerPage);
+  paginate(".well-known", wellKnownBooks, booksPerPage);
   //----------------------------end
 };
 
@@ -637,7 +631,7 @@ const showSearchResults = (books) => {
     <input class="filter-price" type="text" id="to-price" placeholder="Đến (Việt Nam Đồng)">`;
 
   searchForm.addEventListener("submit", (event) => {
-    event.preventDefault(); // Ngăn chặn hành vi mặc định của form
+    event.preventDefault();
     const keyword = searchForm.querySelector(".input-search").value;
     const category = filter.querySelector(".filter-category").value;
     let fromPrice = filter.querySelector("#from-price").value;
@@ -663,12 +657,6 @@ const showSearchResults = (books) => {
   for (let book of books) {
     products.append(createProductDiv(book));
   }
-
-  // const nav = document.createElement("nav");
-  // nav.classList(".pagination");
-  // products.append(nav);
-
-  // paginate(".saf-products", books);
 
   // section.search-and-filter
   const searchResults = document.createElement("section");
@@ -904,7 +892,39 @@ const showSignupSection = () => {
 };
 
 // PHẦN NÀY ĐỂ KIỂM TRA NGƯỜI DÙNG ĐÃ ĐĂNG NHẬP LÀ AI
-const checkSignin = () => {};
+const checkSignin = () => {
+  const getActiveUser = localStorage.getItem("activeUser");
+  if (getActiveUser) {
+    const activeUser = JSON.parse(getActiveUser);
+    if (activeUser.username === "admin") {
+      document.querySelector(
+        ".header-nav-area"
+      ).innerHTML = `<span href="" class="navigation" id="signin">
+          <ion-icon name="log-out-outline"></ion-icon>
+        </span>
+        <span href="" class="navigation" id="search">
+          <ion-icon name="settings-outline"></ion-icon>
+        </span>
+        <span href="" class="navigation">
+          <ion-icon name="cart-outline"></ion-icon>
+        </span>
+      `;
+    } else {
+      document.querySelector(
+        ".header-nav-area"
+      ).innerHTML = `<span href="" class="navigation" id="signin">
+          <ion-icon name="log-out-outline"></ion-icon>
+        </span>
+        <span href="" class="navigation" id="search">
+          <ion-icon name="search-outline"></ion-icon>
+        </span>
+        <span href="" class="navigation">
+          <ion-icon name="cart-outline"></ion-icon>
+        </span>
+      `;
+    }
+  }
+};
 
 // GỌI CÁC HÀM CẦN THIẾT
 createProducts();
@@ -967,4 +987,5 @@ window.onload = () => {
   addShowMoreDetailsEvent(".main");
   changeImg();
   changeHeaderNavArea();
+  checkSignin();
 };
