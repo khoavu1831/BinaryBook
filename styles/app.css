@@ -269,7 +269,7 @@ header, main, footer {
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
-
+  background-color: #fefae0;
   padding: 0;
 }
 .saf-area {

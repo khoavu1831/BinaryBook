@@ -286,6 +286,11 @@ const createAdmin = () => {
 };
 // Hàm kiểm tra chuỗi rỗng hoặc chir chứa khoảng trắng
 const isEmptyStringOrWhiteSpaces = (string) => string.trim().length === 0;
+// Hàm kiểm tra một chuỗi có phải là số điện thoại hợp lệ hay không
+const isValidPhoneNumber = (phoneNumber) => {
+  const regex = /^0[35789]\d{8}$/;
+  return regex.test(phoneNumber);
+};
 // Hàm để định dạng số nguyên thành chuỗi giá tiền
 const intToPriceString = (priceInt) =>
   priceInt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " đ";
@@ -452,6 +457,7 @@ const showProducts = () => {
   paginate(".well-known", wellKnownBooks);
   //----------------------------end
 };
+
 // PHẦN NÀY ĐỂ HIỂN THỊ SUBHEADER VÀ LINKCOLUMN CHO TRANG WEB
 // Hàm bổ sung sub-header
 const createSubheader = () => {
@@ -508,6 +514,7 @@ const createLinkColumn = () => {
     linkColumnItemsContainer.append(li);
   }
 };
+
 // HÀM NÀY ĐỂ THÊM SỰ KIỆN XEM THÊM THÔNG TIN SÁCH KHI NGƯỜI DÙNG CLICK VÀO ẢNH
 const addShowMoreDetailsEvent = (ctn) => {
   const bestSellerBooks = JSON.parse(localStorage.getItem("bestSellerBooks"));
@@ -559,7 +566,8 @@ const addShowMoreDetailsEvent = (ctn) => {
     }
   });
 };
-// PHẦN NÀY ĐỂ THÊM SỰ KIỆN CHO NÚT TÌM KIẾM
+
+// PHẦN NÀY CHO NÚT TÌM KIẾM
 // Hàm tìm kiếm sách theo từ khóa, loại và khoảng giá
 const searchBooks = (
   keyword,
@@ -670,6 +678,7 @@ const showSearchResults = (books) => {
   searchResults.append(safArea, products, closeBtn);
   document.querySelector(".main").append(searchResults); // hiển thị nó
 };
+
 // PHẦN NÀY CỦA CHỨC NĂNG ĐĂNG NHẬP ĐĂNG KÝ
 // Hàm thực hiện đăng nhập
 const signin = () => {
@@ -773,19 +782,41 @@ const signup = () => {
     alert("KHÔNG ĐƯỢC BỎ TRỐNG BẤT CỨ TRƯỜNG NÀO!");
     return false;
   }
+  if (!isValidPhoneNumber(phone)) {
+    alert(
+      "Số điện thoại không hợp lệ! Xin lưu ý rằng bạn không thể qua mặt chúng tôi bằng cách nhập một số điện thoại di động không tồn tại ở Việt Nam!!!"
+    );
+    signupSection.querySelector("#phone").focus();
+    return false;
+  }
+  if (username.length < 6 || username.length > 18) {
+    alert("Tên đăng nhập nên có ít nhất 6 kí tự và tối đa 18 kí tự!");
+    signupSection.querySelector("#username").focus();
+    return false;
+  }
+  if (password.length < 8 || password.length > 24) {
+    alert("Mật khẩu nên có ít nhất 8 kí tự và tối đa 24 kí tự!");
+    signupSection.querySelector("#password").focus();
+    return false;
+  }
+  if (repassword !== password) {
+    alert("Mật khẩu xác nhận không khớp!");
+    signupSection.querySelector("#repassword").focus();
+    return false;
+  }
 
   const users = JSON.parse(localStorage.getItem("users"));
-  for (let i = 0; i < users.length; i++)
-    if (username == users[i].username) {
+  for (let user of users)
+    if (username === user.username) {
       alert("TÊN ĐĂNG NHẬP ĐÃ TỒN TẠI!");
-      username.focus();
+      signupSection.querySelector("#username").focus();
       return false;
     }
 
   const date = new Date();
   const signupSince =
     date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
-  const user = {
+  const newUser = {
     username: username,
     password: password,
     fullName: fullName,
@@ -794,10 +825,10 @@ const signup = () => {
     signupSince: signupSince,
   };
 
-  users.push(user);
+  users.push(newUser);
   localStorage.setItem("users", JSON.stringify(users));
 
-  alert("Bạn đã đăng ký thành công! Hãy đăng nhập ngay để tiếp tục mua hàng!");
+  alert("Bạn đã đăng ký thành công! Hãy đăng nhập để tiếp tục mua hàng!");
   signupSection.remove();
   showSigninSection();
 };
@@ -822,7 +853,7 @@ const showSignupSection = () => {
       <label for="phone">Nhập số điện thoại:</label>
       <label for="username">Nhập tên đăng nhập:</label>
       <label for="password">Nhập mật khẩu:</label>
-      <label for="repassword">Nhập lại mật khẩu:</label>
+      <label for="repassword">Xác nhận lại mật khẩu:</label>
     </div>
     <div class="signin-column-two">
       <input type="text" placeholder="Họ và tên" id="fullName" required />
@@ -862,13 +893,14 @@ const showSignupSection = () => {
     showSigninSection();
   });
 };
+
+// PHẦN NÀY ĐỂ KIỂM TRA NGƯỜI DÙNG ĐÃ ĐĂNG NHẬP LÀ AI
+const checkSignin = () => {};
+
 // GỌI CÁC HÀM CẦN THIẾT
 createProducts();
 createAdmin();
-showProducts();
-createSubheader();
-createLinkColumn();
-addShowMoreDetailsEvent(".main");
+
 // Thêm sự kiện cho nút tìm kiếm
 document.querySelector("#search").addEventListener("click", (event) => {
   event.preventDefault();
@@ -920,6 +952,10 @@ if (width <= 1024 && signinId.classList.contains("signin")) {
 
 // ONLOAD
 window.onload = () => {
+  showProducts();
+  createSubheader();
+  createLinkColumn();
+  addShowMoreDetailsEvent(".main");
   changeImg();
   changeHeaderNavArea();
 };
