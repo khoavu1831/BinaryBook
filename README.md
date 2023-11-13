@@ -1,2 +1,3 @@
 # BinaryBook
-Tao Web ban sach cho do an Web 1 va tui la duc tri ne
+Nhánh của Kiệt
+làm trang chủ và thêm vào các năng như đăng nhập, đăng ký, tìm + lọc sách, giỏ hàng,...
