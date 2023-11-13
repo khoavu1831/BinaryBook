@@ -452,6 +452,7 @@ const showProducts = () => {
   paginate(".well-known", wellKnownBooks);
   //----------------------------end
 };
+// PHẦN NÀY ĐỂ HIỂN THỊ SUBHEADER VÀ LINKCOLUMN CHO TRANG WEB
 // Hàm bổ sung sub-header
 const createSubheader = () => {
   const subheaderItemTitles = [
@@ -558,7 +559,7 @@ const addShowMoreDetailsEvent = (ctn) => {
     }
   });
 };
-// PHẦN NÀY ĐỂ THÊM SỰ KIỆN XEM CHO NÚT TÌM KIẾM
+// PHẦN NÀY ĐỂ THÊM SỰ KIỆN CHO NÚT TÌM KIẾM
 // Hàm tìm kiếm sách theo từ khóa, loại và khoảng giá
 const searchBooks = (
   keyword,
@@ -669,33 +670,31 @@ const showSearchResults = (books) => {
   searchResults.append(safArea, products, closeBtn);
   document.querySelector(".main").append(searchResults); // hiển thị nó
 };
+// PHẦN NÀY CỦA CHỨC NĂNG ĐĂNG NHẬP ĐĂNG KÝ
 // Hàm thực hiện đăng nhập
 const signin = () => {
   const signinSection = document.querySelector(
     "section.signin-section.normal-box"
   );
   const form = signinSection.querySelector(".signin-main form");
-  let usr = form.querySelector("input#username").value;
-  let pass = form.querySelector("input#password").value;
-  if (isEmptyStringOrWhiteSpaces(usr) || isEmptyStringOrWhiteSpaces(pass)) {
-    alert("Không được bỏ trống bất kỳ trường nào!");
-    signinSection.remove();
-    showSigninSection();
+  let username = form.querySelector("#username").value;
+  let password = form.querySelector("#password").value;
+
+  if (!username || !password) {
+    alert("KHÔNG ĐƯỢC BỎ TRỐNG BẤT CỨ TRƯỜNG NÀO!");
     return false;
   }
+
   const users = JSON.parse(localStorage.getItem("users"));
-  for (let i = 0; i < users.length; i++)
-    if (usr == users[i].username)
-      if (pass == users[i].password) {
-        signinSection.remove();
-        localStorage.setItem("activeUsers", JSON.stringify(users[i]));
-        window.location.reload(true);
-        return true;
-      }
+  for (let user of users)
+    if (username == user.username && password == user.password) {
+      signinSection.remove();
+      localStorage.setItem("activeUser", JSON.stringify(user));
+      window.location.reload(true);
+      return true;
+    }
 
   alert("Kiểm tra lại thông tin đăng nhập!");
-  signinSection.remove();
-  showSigninSection();
   return false;
 };
 // Hàm để hiển thị phần đăng nhập
@@ -753,12 +752,54 @@ const showSigninSection = () => {
 };
 // Hàm thực hiện đăng ký
 const signup = () => {
-  const fullName = document.getElementById("fullName");
-  const address = document.getElementById("address");
-  const phone = document.getElementById("phone");
-  const username = document.getElementById("username");
-  const password = document.getElementById("password");
-  const repassword = document.getElementById("repassword");
+  const signupSection = document.querySelector(
+    "section.signin-section.normal-box"
+  );
+  const fullName = signupSection.querySelector("#fullName").value;
+  const address = signupSection.querySelector("#address").value;
+  const phone = signupSection.querySelector("#phone").value;
+  const username = signupSection.querySelector("#username").value;
+  const password = signupSection.querySelector("#password").value;
+  const repassword = signupSection.querySelector("#repassword").value;
+
+  if (
+    !fullName ||
+    !address ||
+    !phone ||
+    !username ||
+    !password ||
+    !repassword
+  ) {
+    alert("KHÔNG ĐƯỢC BỎ TRỐNG BẤT CỨ TRƯỜNG NÀO!");
+    return false;
+  }
+
+  const users = JSON.parse(localStorage.getItem("users"));
+  for (let i = 0; i < users.length; i++)
+    if (username == users[i].username) {
+      alert("TÊN ĐĂNG NHẬP ĐÃ TỒN TẠI!");
+      username.focus();
+      return false;
+    }
+
+  const date = new Date();
+  const signupSince =
+    date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
+  const user = {
+    username: username,
+    password: password,
+    fullName: fullName,
+    address: address,
+    phone: phone,
+    signupSince: signupSince,
+  };
+
+  users.push(user);
+  localStorage.setItem("users", JSON.stringify(users));
+
+  alert("Bạn đã đăng ký thành công! Hãy đăng nhập ngay để tiếp tục mua hàng!");
+  signupSection.remove();
+  showSigninSection();
 };
 // Hàm để hiển thị phần đăng ký
 const showSignupSection = () => {
@@ -797,15 +838,15 @@ const showSignupSection = () => {
   main.append(form);
 
   // signup-footer
-  const signinBtn = document.createElement("button");
-  signinBtn.innerText = "Đăng kí ngay";
+  const signupBtn = document.createElement("button");
+  signupBtn.innerText = "Đăng kí ngay";
 
   const toSignin = document.createElement("p");
   toSignin.innerText = "Đã có tài khoản? Nhấn vào đây để đăng nhập";
 
   const footer = document.createElement("footer");
   footer.classList.add("signin-footer");
-  footer.append(signinBtn, toSignin);
+  footer.append(signupBtn, toSignin);
 
   const signupSection = document.createElement("section");
   signupSection.classList.add("signin-section", "normal-box");
@@ -815,13 +856,13 @@ const showSignupSection = () => {
   closeBtn.addEventListener("click", () => {
     signupSection.remove();
   });
-  signinBtn.addEventListener("click", signin);
+  signupBtn.addEventListener("click", signup);
   toSignin.addEventListener("click", () => {
     signupSection.remove();
     showSigninSection();
   });
 };
-// GỌI CÁC HÀM
+// GỌI CÁC HÀM CẦN THIẾT
 createProducts();
 createAdmin();
 showProducts();
@@ -833,7 +874,7 @@ document.querySelector("#search").addEventListener("click", (event) => {
   event.preventDefault();
   showSearchResults([]);
 });
-// Thêm sự kiện cho nút signin
+// Thêm sự kiện cho nút đăng nhập
 document.querySelector("#signin").addEventListener("click", (event) => {
   event.preventDefault();
   showSigninSection();
