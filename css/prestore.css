@@ -1,0 +1,874 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+a, img, button {
+  cursor: pointer;
+}
+
+
+/* --------------------------------------------------------------- */
+
+/* phần chung */
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  box-sizing: border-box;
+}
+
+.main {
+	background:
+    radial-gradient(#3a86ff 3px, transparent 4px),
+    radial-gradient(#ff006e 3px, transparent 4px),
+    linear-gradient(#fff 4px, transparent 0),
+    linear-gradient(45deg, transparent 74px, transparent 75px, #a4a4a4 75px, #a4a4a4 76px, transparent 77px, transparent 109px),
+    linear-gradient(-45deg, transparent 75px, transparent 76px, #a4a4a4 76px, #a4a4a4 77px, transparent 78px, transparent 109px),
+    #fff;
+    background-size: 109px 109px, 109px 109px,100% 6px, 109px 109px, 109px 109px;
+    background-position: 54px 55px, 0px 0px, 0px 0px, 0px 0px, 0px 0px;
+}
+
+header, main, footer {
+  box-sizing: border-box;
+  background-color: white;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.main {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-around;
+  align-items: center;
+}
+
+
+/* **************** */
+
+/* bắt đầu phần slideshow */
+.slideshow {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3/1;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.6);
+}
+.slideshow-img {
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+/* kết thúc phần slideshow */
+
+
+/* bắt đầu more-details*/  
+.details {
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: fixed;
+  width: 50%;
+
+  height: auto;
+  aspect-ratio: 2/1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid #888;
+  border-radius: .5rem;
+  padding: 1rem;
+  background: rgb(237,237,233);
+  background: linear-gradient(90deg, rgba(237,237,233,0.9) 0%, rgba(245,235,224,0.98) 70%, rgba(227,213,202,0.95) 100%);
+  box-shadow: 0 12px 18px 0 rgba(0,0,0,0.6);
+}
+.first-details-container {
+  width: 30%;
+  height: 100%;
+  box-sizing: border-box;
+  
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.fdc-img-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: flex-start;
+  box-sizing: border-box;
+  width: 100%;
+  height: 80%;
+}
+.fdc-img-container > img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-height: 100%;
+  max-width: 100%;
+  border-radius: 3%;
+}
+.close-btn {
+  height: 15%;
+  width: 100%;
+  padding: 0 10px;
+  text-transform: uppercase;
+  font-size: .7rem;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 700;
+  color: white;
+  background-color: #e16d00;
+  border: none;
+  border-radius: .6rem;
+}
+.close-btn:hover {
+  background-color: #ff8b1e;
+}
+.second-details-container {
+  width: 65%;
+  height: 100%;
+  box-sizing: border-box;
+  font-family: 'IBM Plex Sans', sans-serif;
+
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+.details-big-text {
+  margin: 0 .5rem .5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.details-normal-text {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: .2rem .5rem;
+}
+/* kết thúc more-details*/
+
+/* bắt đầu phần best-seller */
+.best-seller {
+  height: auto;
+  width: 70%;
+  margin: 30px auto;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-around;
+  align-items: center;
+}
+.title {
+  padding: 5px 18px;
+  margin: 2rem 2rem 1rem;
+  font-size: 2rem;
+  font-family: 'Agbalumo', sans-serif;
+  color: #0066ff;
+  background-color: white;
+}
+.products {
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: row wrap;
+  flex: 1 1 auto;
+  justify-content: flex-start;
+  align-items: center;
+}
+.product {
+  width: 23%;
+  height: 28rem;
+  padding: 1rem .5rem;
+  margin: .6rem 1%;
+  border-radius: 20px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.6);
+
+  background: rgb(255,50,125);
+  background: linear-gradient(0deg, rgba(255,50,125,0.5) 0%, rgba(255,255,255,0.3) 50%, rgba(40,90,255,0.5) 100%);
+
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+.product-image {
+  width: 100%;
+  height: 45%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.product-image > img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-height: 100%;
+  border-radius: 3%;
+}
+.product-image > img:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease-in-out;
+}
+.book-title {
+  margin: 8px;
+  font-size: .9rem;
+  font-weight: 700;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+.author {
+  font-size: .7rem;
+  font-weight: 400;
+  margin: 0 8px;
+}
+.price {
+  margin: 8px;
+  font-family: 'Roboto Mono', sans-serif;
+}
+.old-price {
+  margin-bottom: 5px;
+  color: red;
+  font-size: .8rem;
+  font-weight: 700;
+  text-decoration: line-through;
+}
+.new-price {
+  font-size: .85rem;
+  font-weight: 700;
+}
+.add-to-cart {
+  width: 90%;
+  margin: auto auto 0;
+  padding: 5px 0;
+  background-color: #ff1c58;
+  color: white;
+  text-transform: uppercase;
+  border-radius: 30px;
+  border: none;
+  font-size: .675rem;
+  font-family: IBM Plex Sans;
+  letter-spacing: .2px;
+  font-weight: 700;
+  line-height: 2;
+  cursor: pointer;
+  transition: ease-out .5s;
+  /* box-shadow: inset 0 0 0 0 #ff1c58; */
+}
+.add-to-cart:hover {
+  color: #432818;
+  box-shadow: inset -200px -50px 0 0 #f1faee;
+}
+.cart-icon {
+  position: relative;
+  top: 2.5px;
+  height: 16px;
+  width: 16px;
+}
+/* kết thúc phần best-seller */
+/* bắt đầu phần phân trang */
+.pagination {
+  margin-top: 1rem;
+  width: 100%;
+  height: 2rem;
+  border-radius: 10%;
+  background: rgb(255,255,255);
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(153,194,255,0.4) 20%, rgba(0,102,255,0.8) 50%, rgba(153,194,255,0.4) 80%, rgba(255,255,255,0) 100%);
+  box-sizing: border-box;
+  display:  flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+.well-known > .pagination {
+  background: rgb(255,255,255);
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,80,126,0.4) 20%, rgba(255,28,88,0.8) 50%, rgba(255,80,126,0.4) 80%, rgba(255,255,255,0) 100%);
+}
+.paginating-link {
+  transition: all .3s ease-in-out;
+  height: 100%;
+  width: 5%;
+  text-align: center;
+  line-height: 2;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  box-sizing: border-box;
+  border-left: 2px solid white; 
+}
+.paginating-link:last-of-type {
+  border-right: 2px solid white;
+}
+.paginating-link:hover {
+  background: rgb(255,28,88);
+  background: radial-gradient(circle, rgba(255,28,88,1) 0%, rgba(255,255,255,1) 100%);
+  color: black;
+}
+.well-known .paginating-link:hover {
+  background: rgb(0,102,255);
+  background: radial-gradient(circle, rgba(0,102,255,1) 0%, rgba(255,255,255,1) 100%);
+}
+.current-page {
+  font-weight: 800;
+  color: black;
+  text-decoration: underline;
+  text-decoration-color: #2b0f42;
+}
+/* kết thúc phần phân trang */
+/* bắt đầu phần well-known */
+.well-known {
+  height: auto;
+  width: 70%;
+  margin: 30px auto;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-around;
+  align-items: center;
+}
+.well-known .title {
+  color: #ff1c58;
+}
+.well-known .product {
+  background: #285aff;
+  background: linear-gradient(0deg, rgba(40,90,255,0.5) 0%, rgba(255,255,255,0.3) 50%, rgba(255,50,125,0.5) 100%);
+}
+.well-known .add-to-cart {
+  background-color: #0066ff;
+}
+
+/* kết thúc phần well-known */
+
+
+/* bắt đầu phần header */
+.header {
+  height: auto;
+  box-sizing: border-box;
+  font-family: 'Open Sans', sans-serif;
+}
+.pre-header {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 10px 50px;
+  background: rgb(255,255,255);
+  background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(224,236,255,1) 55%, rgba(204,224,255,1) 60%, rgba(183,212,255,1) 65%, rgba(163,200,255,1) 70%, rgba(135,183,255,1) 75%, rgba(110,168,255,1) 80%, rgba(79,150,255,1) 85%, rgba(51,133,255,1) 90%, rgba(23,116,255,1) 95%, rgba(0,102,255,1) 100%);
+  color: black;
+  font-size: 1.2rem;
+  font-weight: 800;
+  font-family: 'IBM Plex Sans', sans-serif;
+  text-align: left;
+}
+.pre-header > p {
+  margin: 5px auto;
+  line-height: 1.35;
+}
+.heart-icon-before {
+  color: #ff1c58;
+}
+.pre-header a {
+  color: #ff327d;
+  text-underline-offset: .2rem;
+  transition: color .5s ease-in-out;
+}
+.pre-header a:hover {
+  color: #0066ff;
+}
+.main-header {
+  padding: 0 1rem;
+  background: rgb(255,50,125);
+  background: linear-gradient(90deg, rgba(255,50,125,1) 0%, rgba(255,63,133,1) 5%, rgba(255,87,148,1) 10%, rgba(255,121,169,1) 15%, rgba(255,141,182,1) 20%, rgba(255,167,199,1) 25%, rgba(255,196,217,1) 30%, rgba(255,216,230,1) 35%, rgba(255,237,243,1) 40%, rgba(255,239,244,1) 45%, rgba(255,255,255,1) 100%);
+  box-sizing: border-box;
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo-header {
+  box-sizing: border-box;
+  margin-left: 1rem;
+}
+.logo-header > a {
+  height: 60px;
+  padding: 0;
+  margin: 0;
+  font-size: .95rem;
+  font-weight: 500;
+  font-family: 'Agbalumo', sans-serif;
+  text-decoration: none;
+  color: white;
+}
+.slogan {
+  margin-top: .3rem;
+  font-size: .7rem;
+  font-weight: 300;
+}
+.search-header {
+  box-sizing: border-box;
+  height: 40px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+.search-box {
+  box-sizing: border-box;
+  height: 80%;
+}
+.search-box > input, .search-box > button {
+  font-family: 'IBM Plex Sans', sans-serif;
+  height: 100%;
+  padding: 0 10px;
+  margin: 0;
+  outline: none;
+  border: none;
+  border-radius: 15px 0 0 15px;
+  background-color: white;
+  color: black;
+}
+.search-box > button {
+  border-radius: 0 15px 15px 0;
+  background: rgb(255,255,255);
+  background: linear-gradient(90deg, rgba(153,194,255,1) 0%, rgba(0,102,255,1) 100%);
+  color: white;
+  font-size: .8rem;
+  font-weight: 600;
+  font-family: 'Open Sans', sans-serif;
+}
+.search-box > button:hover, .signin:hover {
+  color: black;
+  background: rgb(255,50,125);
+  background: linear-gradient(270deg, rgba(255,50,125,1) 0%, rgba(255,75,141,1) 12%, rgba(255,95,154,1) 22%, rgba(255,109,163,1) 29%, rgba(255,125,173,1) 37%, rgba(255,144,185,1) 46%, rgba(255,165,198,1) 56%, rgba(255,181,208,1) 64%, rgba(255,197,218,1) 72%, rgba(255,212,227,1) 79%, rgba(255,228,238,1) 87%, rgba(255,255,255,1) 100%);
+}
+.search-box > input {
+  box-sizing: border-box;
+  width: 15rem;
+  font-size: .8rem;
+  font-weight: 600;
+  font-family: 'Open Sans', sans-serif;
+  caret-color: #ff1c58;
+}
+.search-box > input::placeholder {
+  color:#b0b0b0;
+}
+.search-box > input:focus {
+  outline: 2px solid rgba(255, 189, 207, .5);
+  color: #ff1c58;
+}
+.header-nav-area {
+  height: 40px;
+  width: auto;
+  box-sizing: border-box;
+  padding: 0 15px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.signin {
+  height: 32px;
+  margin-right: .5rem;
+  padding: 0 20px;
+  border-radius: 15px;
+  font-size: .8rem;
+  font-weight: 600;
+  line-height: 2.5;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  background-color: #0066ff;
+  cursor: pointer;
+}
+.navigation {
+  position: relative;
+  top: 1px;
+  color: #0066ff;
+  height: 16px;
+  width: 16px;
+  margin: 0 .25rem;
+  margin-left: 1rem;
+  font-weight: 700;
+  transform: scale(1.5);
+  cursor: pointer;
+}
+.navigation:hover {
+  color:#ff327d;
+}
+.navigation, .signin, .search-box > button {
+  transition: all .5s ease-in-out;
+}
+
+/* sub-header đã được chuyển sang main */
+.sub-header {
+  box-sizing: border-box;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-around;
+  align-items: center;
+}
+.sub-header-nav {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 .5rem;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: #e9c46a;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.6);
+}
+.sub-header-item {
+  text-decoration: none;
+  font-size: .65rem;
+  font-weight: 400;
+  font-family: 'Roboto', sans-serif;
+  color: black;
+  margin-right: 1rem;
+  padding: 5px;
+  border-bottom: 2px solid #e9c46a;
+}
+.sub-header-item:hover {
+  color: #f04;
+
+  border-bottom: 2px solid #06f;
+  background-color: #f3ede8;
+}
+/* kết thúc phần header */
+/* bắt đầu phần footer */
+.footer {
+  height: auto;
+  box-sizing: border-box;
+  border: none;
+  color: white;
+  background-color: #361055;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+.main-footer {
+  height: 9rem;
+  width: 100%;
+  border-bottom: 1px solid rgba(187,187,187,.5);
+  flex: .8 1.2 auto;
+  box-sizing: border-box;
+}
+.link-column {
+  height: 100%;
+  width: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: space-evenly;
+  align-items:stretch;
+  align-content:space-evenly;
+}
+.link-column li {
+  text-align: left;
+  padding: 8px;
+}
+.link-column a {
+  text-align: left;
+  color: #ddd;
+  text-decoration: none;
+  font-size: .8rem;
+  font-weight: 600;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+.link-column a:hover {
+  color: white;
+  text-decoration:underline;
+}
+.post-footer {
+  box-sizing: border-box;
+  height: 3.5rem;
+  width: 100%;
+  padding: .8rem 2rem;
+  flex: 1.2 .8 auto;
+  color: #eee;
+  background-color: #2b0f42;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.links {
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+.links a {
+  margin-right: .8rem;
+  color: white;
+  font-size: 1.4rem;
+  font-weight: 400;
+  font-family: 'Open Sans', sans-serif;
+  transition: all .3s ease-in-out;
+}
+.links a:nth-of-type(1):hover {
+  color: #0066ff;
+}
+.links a:nth-of-type(2):hover {
+  color: #ff327d;
+}
+.links a:nth-of-type(3):hover {
+  color: #90e0ef;
+}
+.copyright {
+  font-size: .8rem;
+  font-weight: 400;
+  font-family: 'Open Sans', sans-serif;
+}
+/* kết thúc phần footer */
+
+
+/* MEDIA QUERIES */
+
+@media  screen and (max-width: 1024px) {
+  .search-header {
+    display: none;
+  }
+  .navigation {
+    transform: scale(1.35);
+    margin: 0 .35rem
+  }
+  .sub-header {
+    display: none;
+  }
+  .details {
+    width: 65%;
+    aspect-ratio: 1.75 / 1;
+  }
+  .close-btn {
+    padding: 0 7px;
+    font-size: .65rem;
+    border-radius: .5rem;
+  }
+  .details-big-text {
+    margin: 0 .5rem .5rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+  .details-normal-text {
+    font-size: .95rem;
+    font-weight: 500;
+    margin: .2rem .5rem;
+  }
+  
+  .best-seller {
+    width: 80%;
+  }
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .product {
+    width: 31%;
+    height: 26rem;
+    padding: 1rem .5rem;
+    margin: .5rem calc(7%/6);
+
+  }
+  .book-title {
+    margin: 8px;
+    font-size: .85rem;
+  }
+  .well-known {
+    width: 80%;
+  }
+  .link-column a {
+    font-size: .76rem;
+  }
+  .links a {
+    font-size: 1.3rem;
+  }
+  .copyright {
+    font-size: .75rem;
+  }
+  
+}
+@media  screen and (max-width: 768px) {
+  .pre-header {
+    font-size: .85rem;
+  }
+  .navigation {
+    transform: scale(1.2);
+    margin: 0 .2rem
+  }
+  .sub-header {
+    display: none;
+  }
+
+  .details {
+    width: 80%;
+    aspect-ratio: 1.55 / 1;
+  }
+  .close-btn {
+    padding: 0 6px;
+    font-size: .6rem;
+    border-radius: .5rem;
+  }
+  .details-big-text {
+    margin: 0 .5rem .5rem;
+    font-size: .95rem;
+    font-weight: 700;
+  }
+  .details-normal-text {
+    font-size: .85rem;
+    font-weight: 500;
+    margin: .2rem .5rem;
+  }
+  .best-seller {
+    width: 90%;
+  }
+  .title {
+    font-size: 1.1rem;
+  }
+
+  .product {
+    width: 45%;
+    height: 24rem;
+    padding: 1rem .5rem;
+    margin: .5rem calc(10%/4);
+  }
+
+  .book-title {
+    margin: 8px;
+    font-size: .825rem;
+  }
+  .well-known {
+    width: 90%;
+  }
+  .pagination {
+    height: 1.5rem;
+  }
+  .paginating-link {
+    font-size: .75rem;
+    line-height: 1.9;
+  }
+  .link-column a {
+    font-size: .72rem;
+  }
+  .links a {
+    font-size: 1.2rem;
+  }
+  .copyright {
+    font-size: .725rem;
+  }  
+  
+}
+@media  screen and (max-width: 480px) {
+  .pre-header {
+    font-size: .7rem;
+  }
+  .slogan {
+    display: none;
+  }
+
+  .navigation {
+    transform: scale(1.1);
+    margin: 0 .1rem
+  }
+  .details {
+    width: 100%;
+    aspect-ratio: 1.4/1;
+  }
+  .close-btn {
+    padding: 0 7px;
+    font-size: .55rem;
+    border-radius: .5rem;
+  }
+  .details-big-text {
+    margin: 0 .5rem .5rem;
+    font-size: .9rem;
+    font-weight: 700;
+  }
+  .details-normal-text {
+    font-size: .8rem;
+    font-weight: 500;
+    margin: .2rem .5rem;
+  }
+  .best-seller {
+    width: 90%;
+  }
+  .title {
+    font-size: 1rem;
+  }
+
+  .product {
+    width: 95%;
+    height: 22rem;
+    padding: 1rem .5rem;
+    margin: .5rem calc(5%/2);
+  }
+  .book-title {
+    margin: 8px;
+    font-size: .8rem;
+  }
+  .well-known {
+    width: 90%;
+  }
+  .link-column a {
+    font-size: .68rem;
+  }
+  .links a {
+    font-size: 1.1rem;
+  }
+  .copyright {
+    font-size: .7rem;
+  }
+  
+}

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý sản phẩm</title>
+<link rel="stylesheet" href="../css/admin.css">
+<link rel="shortcut icon" href="../images/logo.jpg">
+</head>
+<body onLoad="showProductList(0);hello()">
+<div id="wrap">
+	<div id="leftmenu"  class="">
+		<div class="logo"><img src="../images/logo.jpg" alt="BinaryBook"></div>
+		<ul>
+			<li><img src="../images/home.svg"><a href="../index.html">Trang chủ</a></li>
+			<li><img src="../images/book.svg"><a href="./product.html">Sản phẩm</a></li>
+			<li><img src="../images/bill.svg"><a href="./invoice.html">Hóa đơn</a></li>
+			<li><img src="../images/customer.svg"><a href="user.html">Khách hàng</a></li>
+		</ul>
+		<div id="account">
+			<div id="hello">
+			</div>
+		</div>
+	</div>
+	<div id="maincontent">
+		<div id="content">
+			<div id="leftsection">
+				<div id="maintable">
+					<h1>DANH SÁCH KHÁCH HÀNG</h1>
+					<table id="productlist">
+					</table>
+					<div id="pagination"></div>
+				</div>
+			</div>
+			<div id="rightsection">
+				<div class="subsection">
+					<h1>TÌM KIẾM</h1>
+					<form>
+					<label for="username">Tên đăng nhập</label>
+					<input type="text" id="username">
+					<label for="fullname">Tên khách hàng</label>
+					<input type="text" id="fullname">
+					<label for="datesign">Ngày đăng ký</label>
+					<input type="text" id="datesign">
+					<button type="reset">Xóa</button>
+					<button type="button">Tìm</button>
+					</form>
+				</div>
+			</div>
+			</div>
+			</div>
+		</div>
+	</div>
+	<div id="modal1" class="modal">
+		<div id="changeproduct">
+			<button class="close" onclick="closechangebox()">&times;</button>
+			<div class="image">
+				<img id="imgbefore" src="">
+				<img id="imgafter" src="">
+			</div>
+			<div class="info">
+				<label for="name">Tên sản phẩm</label>
+				<input type="text" id="name" value="Vans Old Skool Otw Repeat"><br>
+				<label for="name">Giá</label>
+				<input type="text" id="price" value="1439000"><br>
+				<input type="file" id="fileimg" onchange="changeimg(this)">
+			</div>
+			<button id="save">Lưu chỉnh sửa</button>
+		</div>
+	</div>
+</div>
+<div id="customalert"></div>
+<script src="../js/admin.js"></script>
+</body>
+</html>
