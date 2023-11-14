@@ -474,9 +474,27 @@ const createSubheader = () => {
   for (subheaderItemTitle of subheaderItemTitles) {
     const subheaderItemLink = document.createElement("a");
     subheaderItemLink.innerText = subheaderItemTitle[0];
+    const category = subheaderItemTitle[1];
     subheaderItemLink.classList.add("sub-header-item");
     subheaderItemLink.setAttribute("href", "");
     nav.append(subheaderItemLink);
+
+    // Thêm sự kiện khi click
+    subheaderItemLink.addEventListener("click", (event) => {
+      event.preventDefault();
+
+      const bestSellerBooks = JSON.parse(
+        localStorage.getItem("bestSellerBooks")
+      );
+      const wellKnownBooks = JSON.parse(localStorage.getItem("wellKnownBooks"));
+      const allBooks = [...bestSellerBooks, ...wellKnownBooks];
+
+      const filteredBooks = allBooks.filter(
+        (book) => book.category === category
+      );
+
+      showSearchResults(filteredBooks);
+    });
   }
   subheaderItemsContainer.append(nav);
 };
@@ -561,7 +579,7 @@ const addShowMoreDetailsEvent = (ctn) => {
   });
 };
 
-// PHẦN NÀY CHO NÚT TÌM KIẾM
+// PHẦN NÀY CHO CHỨC NĂNG TÌM KIẾM
 // Hàm tìm kiếm sách theo từ khóa, loại và khoảng giá
 const searchBooks = (
   keyword,
@@ -894,52 +912,65 @@ const showSignupSection = () => {
 // PHẦN NÀY ĐỂ KIỂM TRA NGƯỜI DÙNG ĐÃ ĐĂNG NHẬP LÀ AI
 const checkSignin = () => {
   const getActiveUser = localStorage.getItem("activeUser");
+  const headerNav = document.querySelector(".header-nav-area");
+  // Nếu đã đăng nhập
   if (getActiveUser) {
     const activeUser = JSON.parse(getActiveUser);
     if (activeUser.username === "admin") {
-      document.querySelector(
-        ".header-nav-area"
-      ).innerHTML = `<span href="" class="navigation" id="signin">
+      headerNav.innerHTML = `<span href="" class="navigation" id="logout">
           <ion-icon name="log-out-outline"></ion-icon>
         </span>
-        <span href="" class="navigation" id="search">
+        <span href="" class="navigation" id="settings">
           <ion-icon name="settings-outline"></ion-icon>
         </span>
-        <span href="" class="navigation">
+        <span href="" class="navigation" id="search">
+          <ion-icon name="search-outline"></ion-icon>
+        </span>
+        <span href="" class="navigation" id="cart">
           <ion-icon name="cart-outline"></ion-icon>
         </span>
       `;
     } else {
-      document.querySelector(
-        ".header-nav-area"
-      ).innerHTML = `<span href="" class="navigation" id="signin">
+      headerNav.innerHTML = `<span href="" class="navigation" id="logout">
           <ion-icon name="log-out-outline"></ion-icon>
         </span>
         <span href="" class="navigation" id="search">
           <ion-icon name="search-outline"></ion-icon>
         </span>
-        <span href="" class="navigation">
+        <span href="" class="navigation" id="cart">
           <ion-icon name="cart-outline"></ion-icon>
         </span>
       `;
     }
   }
+  //Nếu chưa đăng nhập
+  else {
+    // Thêm sự kiện cho nút đăng nhập
+    headerNav.querySelector("#signin").addEventListener("click", (event) => {
+      event.preventDefault();
+      showSigninSection();
+    });
+    //
+    headerNav.querySelector("#cart").addEventListener("click", (event) => {});
+  }
+
+  //
+  headerNav.addEventListener("click", (event) => {
+    const logout = event.target.closest("#logout");
+    const settings = event.target.closest("#settings");
+    if (logout) {
+      localStorage.removeItem("activeUser");
+      window.location.href = "index.html";
+    }
+    if (settings) {
+      window.location.href = "admin/management.html";
+    }
+  });
 };
 
 // GỌI CÁC HÀM CẦN THIẾT
 createProducts();
 createAdmin();
-
-// Thêm sự kiện cho nút tìm kiếm
-document.querySelector("#search").addEventListener("click", (event) => {
-  event.preventDefault();
-  showSearchResults([]);
-});
-// Thêm sự kiện cho nút đăng nhập
-document.querySelector("#signin").addEventListener("click", (event) => {
-  event.preventDefault();
-  showSigninSection();
-});
 
 // PHẦN NÀY ĐỂ HIỂN THỊ SLIDESHOW
 let slideshowImgIdx = 1;
@@ -988,4 +1019,10 @@ window.onload = () => {
   changeImg();
   changeHeaderNavArea();
   checkSignin();
+
+  // Thêm sự kiện cho nút tìm kiếm
+  document.querySelector("#search").addEventListener("click", (event) => {
+    event.preventDefault();
+    showSearchResults([]);
+  });
 };
