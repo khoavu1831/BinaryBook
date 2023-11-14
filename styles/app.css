@@ -995,6 +995,37 @@ header, main, footer {
   
 }
 @media  screen and (max-width: 768px) {
+  /* Signin section */
+  .signin-header h1 {
+    font-size: 1.15rem;
+  }
+  .signin-close-button {
+    width: 1.8rem;
+    height: 1.8rem;
+    font-size: 1.8rem;
+  }
+  .signin-column-one > label {
+    font-size: .85rem;
+    font-weight: 600;
+    font-family: "Open Sans", sans-serif;
+    height: 2rem;
+    line-height: 2;
+  }
+  .signin-column-two > input {
+    height: 1.95rem;
+    box-sizing: border-box;
+    margin: .2rem 0 .2rem auto;
+    font-size: .8rem;
+  }
+  .signin-footer > button {
+    height: 2rem;
+    font-size: .975rem;
+  }
+  .signin-footer > p {
+    font-size: .85rem;
+  }
+  /* Signin section */
+
   .normal-box {
     width: 80%;
   }
@@ -1070,6 +1101,37 @@ header, main, footer {
   
 }
 @media  screen and (max-width: 480px) {
+  /* Signin section */
+  .signin-header h1 {
+    font-size: 1.1rem;
+  }
+  .signin-close-button {
+    width: 1.8rem;
+    height: 1.8rem;
+    font-size: 1.8rem;
+  }
+  .signin-column-one > label {
+    font-size: .725rem;
+    font-weight: 600;
+    font-family: "Open Sans", sans-serif;
+    height: 2rem;
+    line-height: 2;
+  }
+  .signin-column-two > input {
+    height: 1.95rem;
+    box-sizing: border-box;
+    margin: .2rem 0 .2rem auto;
+    font-size: .7rem;
+  }
+  .signin-footer > button {
+    height: 1.8rem;
+    font-size: .9rem;
+  }
+  .signin-footer > p {
+    font-size: .7rem;
+  }
+  /* Signin section */
+
   .normal-box {
     width: 100%;
   }

@@ -343,6 +343,24 @@ const createProductDiv = (book) => {
   const addToCart = document.createElement("button");
   addToCart.append(addToCartIcon, addToCartSpan);
   addToCart.classList.add("add-to-cart");
+  addToCart.addEventListener("click", () => {
+    if (!localStorage.getItem("activeUser")) {
+      alert("Bạn phải đăng nhập để mua hàng!");
+      return;
+    }
+
+    let cart = [];
+    if (localStorage.getItem("cart"))
+      cart = JSON.parse(localStorage.getItem("cart"));
+
+    addedBook = book;
+    cart.push(addedBook);
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert(
+      `${addedBook.title} đã được thêm vào giỏ! Hãy kiểm tra giỏ hàng và nhận sách ngay!`
+    );
+  });
 
   // them cac thanh phan vao div bao quat
   productDiv.append(
@@ -959,8 +977,11 @@ const checkSignin = () => {
     const logout = event.target.closest("#logout");
     const settings = event.target.closest("#settings");
     if (logout) {
-      localStorage.removeItem("activeUser");
-      window.location.href = "index.html";
+      if (confirm("Bạn có chắc muốn đăng xuất? Chúng tôi sẽ rất nhớ bạn :((")) {
+        localStorage.removeItem("activeUser");
+        localStorage.removeItem("cart");
+        window.location.href = "index.html";
+      }
     }
     if (settings) {
       window.location.href = "admin/management.html";
@@ -989,6 +1010,7 @@ const changeImg = () => {
 // PHẦN NÀY ĐỂ THAY ĐỔI TRÊN header-nav-area
 const changeHeaderNavArea = () => {
   window.addEventListener("resize", () => {
+    if (!document.querySelector("#signin")) return;
     const width = window.innerWidth;
     const signin = document.querySelector("#signin");
     if (width <= 768 && signin.classList.contains("signin")) {
