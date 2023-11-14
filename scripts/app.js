@@ -284,10 +284,20 @@ const createAdmin = () => {
     localStorage.setItem("users", JSON.stringify(users));
   }
 };
-// Hàm kiểm tra một chuỗi có phải là số điện thoại hợp lệ hay không
+// Hàm kiểm tra xem một chuỗi có phải là một số điện thoại hợp lệ hay không
 const isValidPhoneNumber = (phoneNumber) => {
   const regex = /^0[35789]\d{8}$/;
   return regex.test(phoneNumber);
+};
+// Hàm kiểm tra xem một chuỗi có phải là một username hợp lệ hay không
+const isValidUsername = (username) => {
+  const regex = /^[a-zA-Z]\w{5,17}$/;
+  return regex.test(username);
+};
+// Hàm kiểm tra xem một chuỗi có phải là một password hợp lệ hay không
+const isValidPassword = (password) => {
+  const regex = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,24}$/;
+  return regex.test(password);
 };
 // Hàm để định dạng số nguyên thành chuỗi giá tiền
 const intToPriceString = (priceInt) =>
@@ -708,29 +718,55 @@ const showSearchResults = (books) => {
 
 // PHẦN NÀY CỦA CHỨC NĂNG ĐĂNG NHẬP ĐĂNG KÝ
 // Hàm thực hiện đăng nhập
-const signin = () => {
+const signin = (event) => {
+  event.preventDefault();
+
   const signinSection = document.querySelector(
     "section.signin-section.normal-box"
   );
+  const errorsArea = signinSection.querySelector(".show-errors");
+
   const form = signinSection.querySelector(".signin-main form");
   let username = form.querySelector("#username").value;
   let password = form.querySelector("#password").value;
 
   if (!username || !password) {
-    alert("KHÔNG ĐƯỢC BỎ TRỐNG BẤT CỨ TRƯỜNG NÀO!");
+    if (errorsArea.querySelector("#empty-field")) {
+      return false;
+    }
+
+    const emptyField = document.createElement("li");
+    emptyField.id = "empty-field";
+    emptyField.innerHTML =
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Không được bỏ trống bất cứ trường nào!';
+
+    errorsArea.append(emptyField);
+    errorsArea.style.display = "block";
+
     return false;
+  } else if (errorsArea.querySelector("#empty-field")) {
+    errorsArea.querySelector("#empty-field").remove();
+    if (!errorsArea.hasChildNodes()) errorsArea.style.display = "none";
   }
 
   const users = JSON.parse(localStorage.getItem("users"));
   for (let user of users)
-    if (username == user.username && password == user.password) {
+    if (username === user.username && password === user.password) {
       signinSection.remove();
       localStorage.setItem("activeUser", JSON.stringify(user));
       window.location.reload(true);
       return true;
     }
 
-  alert("Kiểm tra lại thông tin đăng nhập!");
+  if (!errorsArea.querySelector("#incorrect-input")) {
+    const incorrectInput = document.createElement("li");
+    incorrectInput.id = "incorrect-input";
+    incorrectInput.innerHTML =
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Kiểm tra lại thông tin đăng nhập!';
+    errorsArea.append(incorrectInput);
+    errorsArea.style.display = "block";
+  }
+
   return false;
 };
 // Hàm để hiển thị phần đăng nhập
@@ -750,29 +786,25 @@ const showSigninSection = () => {
   // signin-main
   const form = document.createElement("form");
   form.innerHTML = `
-  <div class="signin-column-one">
+    <ul class="show-errors"></ul>
     <label for="username">Nhập tên đăng nhập:</label>
+    <input type="text" placeholder="Tên đăng nhập" id="username" />
     <label for="password">Nhập mật khẩu:</label>
-  </div>
-  <div class="signin-column-two">
-    <input type="text" placeholder="Tên đăng nhập" id="username" required />
-    <input type="password" placeholder="Mật khẩu" id="password" required />
-  </div>
+    <input type="password" placeholder="Mật khẩu" id="password" />
+    <input type="submit" value="Đăng nhập ngay" class="signin-btn"/>
 `;
+
   const main = document.createElement("main");
   main.classList.add("signin-main");
   main.append(form);
 
   // signin-footer
-  const signinBtn = document.createElement("button");
-  signinBtn.innerText = "Đăng nhập ngay";
-
   const toSignup = document.createElement("p");
   toSignup.innerText = "Chưa có tài khoản? Nhấn vào đây để đăng ký";
 
   const footer = document.createElement("footer");
   footer.classList.add("signin-footer");
-  footer.append(signinBtn, toSignup);
+  footer.append(toSignup);
 
   const signinSection = document.createElement("section");
   signinSection.classList.add("signin-section", "normal-box");
@@ -783,17 +815,22 @@ const showSigninSection = () => {
     signinSection.remove();
     document.querySelector(".hide-screen").style.display = "none";
   });
-  signinBtn.addEventListener("click", signin);
+  signinSection.querySelector(".signin-btn").addEventListener("click", signin);
   toSignup.addEventListener("click", () => {
     signinSection.remove();
     showSignupSection();
   });
 };
 // Hàm thực hiện đăng ký
-const signup = () => {
+const signup = (event) => {
+  event.preventDefault();
+
   const signupSection = document.querySelector(
     "section.signin-section.normal-box"
   );
+
+  const errorsArea = signupSection.querySelector(".show-errors");
+
   const fullName = signupSection.querySelector("#fullName").value;
   const address = signupSection.querySelector("#address").value;
   const phone = signupSection.querySelector("#phone").value;
@@ -801,6 +838,7 @@ const signup = () => {
   const password = signupSection.querySelector("#password").value;
   const repassword = signupSection.querySelector("#repassword").value;
 
+  // Kiểm tra nếu có bất kỳ trường nào bị bỏ trống
   if (
     !fullName ||
     !address ||
@@ -809,43 +847,136 @@ const signup = () => {
     !password ||
     !repassword
   ) {
-    alert("KHÔNG ĐƯỢC BỎ TRỐNG BẤT CỨ TRƯỜNG NÀO!");
+    if (errorsArea.querySelector("#empty-field")) {
+      return false;
+    }
+
+    const emptyField = document.createElement("li");
+    emptyField.id = "empty-field";
+    emptyField.innerHTML =
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Không được bỏ trống bất cứ trường nào!';
+
+    errorsArea.append(emptyField);
+    errorsArea.style.display = "block";
+
     return false;
+  } else if (errorsArea.querySelector("#empty-field")) {
+    errorsArea.querySelector("#empty-field").remove();
+    if (!errorsArea.hasChildNodes()) errorsArea.style.display = "none";
   }
+
+  // Kiểm tra nếu số điện thoại không hợp lệ
   if (!isValidPhoneNumber(phone)) {
-    alert(
-      "Số điện thoại không hợp lệ! Xin lưu ý rằng bạn không thể qua mặt chúng tôi bằng cách nhập một số điện thoại di động không tồn tại ở Việt Nam!!!"
-    );
+    if (errorsArea.querySelector("#invalid-phone-number")) {
+      return false;
+    }
+
+    const invalidPhoneNumber = document.createElement("li");
+    invalidPhoneNumber.id = "invalid-phone-number";
+    invalidPhoneNumber.innerHTML =
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Số điện thoại không hợp lệ! Xin lưu ý rằng bạn không thể qua mặt chúng tôi bằng cách nhập một số điện thoại di động không tồn tại ở Việt Nam!!!';
+
+    errorsArea.append(invalidPhoneNumber);
+    errorsArea.style.display = "block";
+
     signupSection.querySelector("#phone").focus();
     return false;
+  } else if (errorsArea.querySelector("#invalid-phone-number")) {
+    errorsArea.querySelector("#invalid-phone-number").remove();
+    if (!errorsArea.hasChildNodes()) errorsArea.style.display = "none";
   }
-  if (username.length < 6 || username.length > 18) {
-    alert("Tên đăng nhập nên có ít nhất 6 kí tự và tối đa 18 kí tự!");
+
+  // Kiểm tra nếu username không hợp lệ
+  if (!isValidUsername(username)) {
+    if (errorsArea.querySelector("#invalid-username")) {
+      return false;
+    }
+
+    const invalidUsername = document.createElement("li");
+    invalidUsername.id = "invalid-username";
+    invalidUsername.innerHTML =
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Tên đăng nhập nên có độ dài tối thiểu 6 và tối đa 18 kí tự, chỉ bao gồm chữ cái và số, kí tự đầu tiên phải là một chữ số!';
+
+    errorsArea.append(invalidUsernameLength);
+    errorsArea.style.display = "block";
+
     signupSection.querySelector("#username").focus();
     return false;
+  } else if (errorsArea.querySelector("#invalid-username")) {
+    errorsArea.querySelector("#invalid-username").remove();
+    if (!errorsArea.hasChildNodes()) errorsArea.style.display = "none";
   }
-  if (password.length < 8 || password.length > 24) {
-    alert("Mật khẩu nên có ít nhất 8 kí tự và tối đa 24 kí tự!");
+
+  // Kiểm tra nếu mật khẩu không hợp lệ
+  if (!isValidPassword(password)) {
+    if (errorsArea.querySelector("#invalid-password")) {
+      return false;
+    }
+
+    const invalidPassword = document.createElement("li");
+    invalidPassword.id = "invalid-password";
+    invalidPassword.innerHTML =
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Mật khẩu nên có độ dài tối thiểu 8 và tối đa 24 kí tự, bao gồm chữ cả chữ cái, số và kí tự đặc biệt!';
+
+    errorsArea.append(invalidPassword);
+    errorsArea.style.display = "block";
+
     signupSection.querySelector("#password").focus();
     return false;
+  } else if (errorsArea.querySelector("#invalid-password")) {
+    errorsArea.querySelector("#invalid-password").remove();
+    if (!errorsArea.hasChildNodes()) errorsArea.style.display = "none";
   }
+
+  // Kiểm tra nếu mật khẩu xác nhận không khớp
   if (repassword !== password) {
-    alert("Mật khẩu xác nhận không khớp!");
+    if (errorsArea.querySelector("#invalid-repassword")) {
+      return false;
+    }
+
+    const invalidRepassword = document.createElement("li");
+    invalidRepassword.id = "invalid-repassword";
+    invalidRepassword.innerHTML =
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Mật khẩu nên có độ dài tối thiểu 8 và tối đa 24!';
+
+    errorsArea.append(invalidRepassword);
+    errorsArea.style.display = "block";
+
     signupSection.querySelector("#repassword").focus();
     return false;
+  } else if (errorsArea.querySelector("#invalid-repassword")) {
+    errorsArea.querySelector("#invalid-repassword").remove();
+    if (!errorsArea.hasChildNodes()) errorsArea.style.display = "none";
   }
 
   const users = JSON.parse(localStorage.getItem("users"));
+  // Kiểm tra nếu tên đăng nhập đã tồn tại
   for (let user of users)
     if (username === user.username) {
-      alert("TÊN ĐĂNG NHẬP ĐÃ TỒN TẠI!");
+      if (errorsArea.querySelector("#username-already-exists")) {
+        return false;
+      }
+
+      const usernameAlreadyExists = document.createElement("li");
+      usernameAlreadyExists.id = "username-already-exists";
+      usernameAlreadyExists.innerHTML =
+        '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Mật khẩu nên có độ dài tối thiểu 8 và tối đa 24!';
+
+      errorsArea.append(usernameAlreadyExists);
+      errorsArea.style.display = "block";
+
       signupSection.querySelector("#username").focus();
       return false;
+    } else if (errorsArea.querySelector("#username-already-exists")) {
+      errorsArea.querySelector("#username-already-exists").remove();
+      if (!errorsArea.hasChildNodes()) errorsArea.style.display = "none";
     }
 
   const date = new Date();
   const signupSince =
     date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
+
+  // tạo ra đối tượng user mới
   const newUser = {
     username: username,
     password: password,
@@ -855,7 +986,7 @@ const signup = () => {
     signupSince: signupSince,
   };
 
-  users.push(newUser);
+  users.push(newUser); // đưa user mới vào mảng
   localStorage.setItem("users", JSON.stringify(users));
 
   alert("Bạn đã đăng ký thành công! Hãy đăng nhập để tiếp tục mua hàng!");
@@ -879,37 +1010,33 @@ const showSignupSection = () => {
   // signup-main
   const form = document.createElement("form");
   form.innerHTML = `
-    <div class="signin-column-one">
-      <label for="fullName">Nhập họ và tên:</label>
-      <label for="address">Nhập địa chỉ:</label>
-      <label for="phone">Nhập số điện thoại:</label>
-      <label for="username">Nhập tên đăng nhập:</label>
-      <label for="password">Nhập mật khẩu:</label>
-      <label for="repassword">Xác nhận lại mật khẩu:</label>
-    </div>
-    <div class="signin-column-two">
-      <input type="text" placeholder="Họ và tên" id="fullName" required />
-      <input type="text" placeholder="Địa chỉ" id="address" required />
-      <input type="text" placeholder="Số điện thoại" id="phone" required />
-      <input type="text" placeholder="Tên đăng nhập" id="username" required />
-      <input type="password" placeholder="Mật khẩu" id="password" required />
-      <input type="password" placeholder="Nhập lại mật khẩu" id="repassword" required />
-    </div>
-  `;
+    <ul class="show-errors"></ul>
+    <label for="fullName">Nhập họ và tên:</label>
+    <input type="text" placeholder="Họ và tên" id="fullName" />
+    <label for="address">Nhập địa chỉ:</label>
+    <input type="text" placeholder="Địa chỉ" id="address" />
+    <label for="phone">Nhập số điện thoại:</label>
+    <input type="text" placeholder="Số điện thoại" id="phone" />
+    <label for="username">Nhập tên đăng nhập:</label>
+    <input type="text" placeholder="Tên đăng nhập" id="username" />
+    <label for="password">Nhập mật khẩu:</label>
+    <input type="password" placeholder="Mật khẩu" id="password" />
+    <label for="repassword">Xác nhận lại mật khẩu:</label>
+    <input type="password" placeholder="Nhập lại mật khẩu" id="repassword" />
+    <input type="submit" value="Đăng nhập ngay" class="signin-btn"/>
+`;
+
   const main = document.createElement("main");
   main.classList.add("signin-main");
   main.append(form);
 
   // signup-footer
-  const signupBtn = document.createElement("button");
-  signupBtn.innerText = "Đăng kí ngay";
-
   const toSignin = document.createElement("p");
   toSignin.innerText = "Đã có tài khoản? Nhấn vào đây để đăng nhập";
 
   const footer = document.createElement("footer");
   footer.classList.add("signin-footer");
-  footer.append(signupBtn, toSignin);
+  footer.append(toSignin);
 
   const signupSection = document.createElement("section");
   signupSection.classList.add("signin-section", "normal-box");
@@ -920,7 +1047,7 @@ const showSignupSection = () => {
     signupSection.remove();
     document.querySelector(".hide-screen").style.display = "none";
   });
-  signupBtn.addEventListener("click", signup);
+  signupSection.querySelector(".signin-btn").addEventListener("click", signup);
   toSignin.addEventListener("click", () => {
     signupSection.remove();
     showSigninSection();
