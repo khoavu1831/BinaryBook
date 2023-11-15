@@ -730,6 +730,7 @@ const signin = (event) => {
   let username = form.querySelector("#username").value;
   let password = form.querySelector("#password").value;
 
+  // Kiểm tra nếu có trường bị bỏ trống
   if (!username || !password) {
     if (errorsArea.querySelector("#empty-field")) {
       return false;
@@ -744,16 +745,20 @@ const signin = (event) => {
     errorsArea.style.display = "block";
 
     return false;
-  } else if (errorsArea.querySelector("#empty-field")) {
-    errorsArea.querySelector("#empty-field").remove();
-    if (!errorsArea.hasChildNodes()) errorsArea.style.display = "none";
+  } else {
+    errorsArea.innerHTML = "";
+    errorsArea.style.display = "none";
   }
 
   const users = JSON.parse(localStorage.getItem("users"));
   for (let user of users)
     if (username === user.username && password === user.password) {
       signinSection.remove();
+      // set active user
       localStorage.setItem("activeUser", JSON.stringify(user));
+      // set cart
+      localStorage.setItem("cart", JSON.stringify([]));
+      // reload
       window.location.reload(true);
       return true;
     }
@@ -860,9 +865,9 @@ const signup = (event) => {
     errorsArea.style.display = "block";
 
     return false;
-  } else if (errorsArea.querySelector("#empty-field")) {
-    errorsArea.querySelector("#empty-field").remove();
-    if (!errorsArea.hasChildNodes()) errorsArea.style.display = "none";
+  } else {
+    errorsArea.innerHTML = "";
+    errorsArea.style.display = "none";
   }
 
   // Kiểm tra nếu số điện thoại không hợp lệ
@@ -881,9 +886,9 @@ const signup = (event) => {
 
     signupSection.querySelector("#phone").focus();
     return false;
-  } else if (errorsArea.querySelector("#invalid-phone-number")) {
-    errorsArea.querySelector("#invalid-phone-number").remove();
-    if (!errorsArea.hasChildNodes()) errorsArea.style.display = "none";
+  } else {
+    errorsArea.innerHTML = "";
+    errorsArea.style.display = "none";
   }
 
   // Kiểm tra nếu username không hợp lệ
@@ -897,14 +902,14 @@ const signup = (event) => {
     invalidUsername.innerHTML =
       '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Tên đăng nhập nên có độ dài tối thiểu 6 và tối đa 18 kí tự, chỉ bao gồm chữ cái và số, kí tự đầu tiên phải là một chữ số!';
 
-    errorsArea.append(invalidUsernameLength);
+    errorsArea.append(invalidUsername);
     errorsArea.style.display = "block";
 
     signupSection.querySelector("#username").focus();
     return false;
-  } else if (errorsArea.querySelector("#invalid-username")) {
-    errorsArea.querySelector("#invalid-username").remove();
-    if (!errorsArea.hasChildNodes()) errorsArea.style.display = "none";
+  } else {
+    errorsArea.innerHTML = "";
+    errorsArea.style.display = "none";
   }
 
   // Kiểm tra nếu mật khẩu không hợp lệ
@@ -923,9 +928,9 @@ const signup = (event) => {
 
     signupSection.querySelector("#password").focus();
     return false;
-  } else if (errorsArea.querySelector("#invalid-password")) {
-    errorsArea.querySelector("#invalid-password").remove();
-    if (!errorsArea.hasChildNodes()) errorsArea.style.display = "none";
+  } else {
+    errorsArea.innerHTML = "";
+    errorsArea.style.display = "none";
   }
 
   // Kiểm tra nếu mật khẩu xác nhận không khớp
@@ -937,16 +942,16 @@ const signup = (event) => {
     const invalidRepassword = document.createElement("li");
     invalidRepassword.id = "invalid-repassword";
     invalidRepassword.innerHTML =
-      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Mật khẩu nên có độ dài tối thiểu 8 và tối đa 24!';
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Mật khẩu xác nhận không đúng!';
 
     errorsArea.append(invalidRepassword);
     errorsArea.style.display = "block";
 
     signupSection.querySelector("#repassword").focus();
     return false;
-  } else if (errorsArea.querySelector("#invalid-repassword")) {
-    errorsArea.querySelector("#invalid-repassword").remove();
-    if (!errorsArea.hasChildNodes()) errorsArea.style.display = "none";
+  } else {
+    errorsArea.innerHTML = "";
+    errorsArea.style.display = "none";
   }
 
   const users = JSON.parse(localStorage.getItem("users"));
@@ -960,16 +965,16 @@ const signup = (event) => {
       const usernameAlreadyExists = document.createElement("li");
       usernameAlreadyExists.id = "username-already-exists";
       usernameAlreadyExists.innerHTML =
-        '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Mật khẩu nên có độ dài tối thiểu 8 và tối đa 24!';
+        '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Tên đăng nhập đã tồn tại!';
 
       errorsArea.append(usernameAlreadyExists);
       errorsArea.style.display = "block";
 
       signupSection.querySelector("#username").focus();
       return false;
-    } else if (errorsArea.querySelector("#username-already-exists")) {
-      errorsArea.querySelector("#username-already-exists").remove();
-      if (!errorsArea.hasChildNodes()) errorsArea.style.display = "none";
+    } else {
+      errorsArea.innerHTML = "";
+      errorsArea.style.display = "none";
     }
 
   const date = new Date();
@@ -1023,7 +1028,7 @@ const showSignupSection = () => {
     <input type="password" placeholder="Mật khẩu" id="password" />
     <label for="repassword">Xác nhận lại mật khẩu:</label>
     <input type="password" placeholder="Nhập lại mật khẩu" id="repassword" />
-    <input type="submit" value="Đăng nhập ngay" class="signin-btn"/>
+    <input type="submit" value="Đăng ký ngay" class="signin-btn"/>
 `;
 
   const main = document.createElement("main");
@@ -1053,14 +1058,33 @@ const showSignupSection = () => {
     showSigninSection();
   });
 };
+// Hàm để hiển thị giỏ hàng
+const showCartSection = () => {
+  const closeBtn = document.createElement("button");
+  closeBtn.classList.add("signin-close-button");
+  closeBtn.innerText = "+";
+  const cartSection = document.createElement("section");
+  cartSection.classList.add("full-screen-box", "cart-section");
 
-// PHẦN NÀY ĐỂ KIỂM TRA NGƯỜI DÙNG ĐÃ ĐĂNG NHẬP LÀ AI
+  const title = document.createElement();
+
+  cartSection.append(closeBtn);
+
+  document.body.append(cartSection);
+
+  // Thêm sự kiện cho nút close
+  closeBtn.addEventListener("click", () => {
+    cartSection.remove();
+  });
+};
+// PHẦN NÀY ĐỂ KIỂM TRA ĐĂNG NHẬP
 const checkSignin = () => {
   const getActiveUser = localStorage.getItem("activeUser");
   const headerNav = document.querySelector(".header-nav-area");
   // Nếu đã đăng nhập
   if (getActiveUser) {
     const activeUser = JSON.parse(getActiveUser);
+    // nếu là admin
     if (activeUser.username === "admin") {
       headerNav.innerHTML = `<span href="" class="navigation" id="logout">
           <ion-icon name="log-out-outline"></ion-icon>
@@ -1075,7 +1099,9 @@ const checkSignin = () => {
           <ion-icon name="cart-outline"></ion-icon>
         </span>
       `;
-    } else {
+    }
+    // nếu không phải admin
+    else {
       headerNav.innerHTML = `<span href="" class="navigation" id="logout">
           <ion-icon name="log-out-outline"></ion-icon>
         </span>
@@ -1087,6 +1113,12 @@ const checkSignin = () => {
         </span>
       `;
     }
+
+    // Thêm sự kiện cho nút giỏ hàng
+    headerNav.querySelector("#cart").addEventListener("click", (event) => {
+      event.preventDefault();
+      showCartSection();
+    });
   }
   //Nếu chưa đăng nhập
   else {
@@ -1095,11 +1127,14 @@ const checkSignin = () => {
       event.preventDefault();
       showSigninSection();
     });
-    //
-    headerNav.querySelector("#cart").addEventListener("click", (event) => {});
+    // Thêm sự kiện cho nút giỏ hàng
+    headerNav.querySelector("#cart").addEventListener("click", (event) => {
+      event.preventDefault();
+      alert("Hãy đăng nhập để mở giỏ hàng của bạn!");
+    });
   }
 
-  //
+  // Thêm sự kiện cho nút đăng xuất và nút quản trị của admin
   headerNav.addEventListener("click", (event) => {
     const logout = event.target.closest("#logout");
     const settings = event.target.closest("#settings");

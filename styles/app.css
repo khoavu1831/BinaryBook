@@ -109,6 +109,15 @@ header, main, footer {
 
 /* **************** */
 
+
+/* bắt đầu phần cart */
+.cart-section {
+  background-color: #8EC5FC;
+  background-image: linear-gradient(62deg, #b7dbff 0%, #ead6fe 100%);
+
+  z-index: 11;
+}
+/* kết thúc phần cart */
 /* bắt đầu phần signin */
 .signin-section {
   box-sizing: border-box;
@@ -180,6 +189,7 @@ header, main, footer {
   font-size: .8rem;
   font-weight: 500;
   color: #f04;
+  line-height: 1.25;
 }
 .error-icon {
   position: relative;
