@@ -302,6 +302,9 @@ const isValidPassword = (password) => {
 // Hàm để định dạng số nguyên thành chuỗi giá tiền
 const intToPriceString = (priceInt) =>
   priceInt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " đ";
+// Loại bỏ ký hiệu tiền tệ và dấu chấm, sau đó chuyển đổi chuỗi thành số nguyên
+const priceStringToInt = (priceString) =>
+  parseInt(priceString.replace(" đ", "").replace(/\./g, ""));
 // Hàm tạo một div product cho một sản phẩm book
 const createProductDiv = (book) => {
   // tao div product (div bao quat ben ngoai)
@@ -1058,25 +1061,201 @@ const showSignupSection = () => {
     showSigninSection();
   });
 };
+
 // Hàm để hiển thị giỏ hàng
 const showCartSection = () => {
+  // close button
   const closeBtn = document.createElement("button");
   closeBtn.classList.add("signin-close-button");
   closeBtn.innerText = "+";
+
+  // cart title
+  const activeUser = JSON.parse(localStorage.getItem("activeUser"));
+  const title = document.createElement("div");
+  title.classList.add("cart-title");
+  title.innerHTML = `<p>${activeUser.fullName} ơi,</p> 
+        <p>kiểm tra lại các mục đã chọn và nhấn Chốt đơn ngay để nhận sách bạn nhé!</p>`;
+
+  // cart-container
+  const cartContainer = document.createElement("div");
+  cartContainer.classList.add("cart-ctn");
+
+  // cart section
   const cartSection = document.createElement("section");
   cartSection.classList.add("full-screen-box", "cart-section");
+  cartSection.append(closeBtn, title, cartContainer);
+  document.body.prepend(cartSection);
 
-  const title = document.createElement();
+  // nếu trong giỏ hàng chưa có gì
+  if (
+    localStorage.getItem("cart") === null ||
+    localStorage.getItem("cart") == "[]"
+  ) {
+    cartContainer.innerHTML = "<p>Không có sản phẩm nào trong giỏ! :(</p>";
+  }
+  // nếu trong giỏ hàng đã có sản phẩm
+  else {
+    const cart = JSON.parse(localStorage.getItem("cart"));
+    // Hàm tính tổng tiền
+    const totalCosting = () => {
+      let totalCost = 0;
+      const allTotals = cartSection.querySelectorAll("#total-cost");
 
-  cartSection.append(closeBtn);
+      for (total of allTotals) {
+        totalCost += priceStringToInt(total.innerText);
+      }
+      return totalCost;
+    };
 
-  document.body.append(cartSection);
+    // cart-thead
+    const thead = document.createElement("div");
+    thead.classList.add("cart-thead");
+    thead.innerHTML = `<div class="cart-tr">
+        <div class="cart-th">Sản phẩm</div>
+        <div class="cart-th">Giá</div>
+        <div class="cart-th">S.lượng</div>
+        <div class="cart-th">Tổng</div>
+        <div class="cart-th"></div>
+        </div>`;
+
+    // cart-tbody
+    const tbody = document.createElement("div");
+    tbody.classList.add("cart-tbody");
+
+    // Mỗi item tương ứng một hàng trong giỏ
+    for (item of cart) {
+      // Cột đầu tiên chứa ảnh và tên mặt hàng
+      const columnOfProduct = document.createElement("div");
+      columnOfProduct.classList.add("cart-td", "cart-product");
+      columnOfProduct.innerHTML = `<div class="cart-product-image">
+          <img src="${item.image}" alt="${item.title}">
+          </div>
+          <div class="cart-product-name">${item.title}</div>`;
+
+      // cột thứ hai chứa giắ mặt hàng
+      const columnOfPrice = document.createElement("div");
+      columnOfPrice.classList.add("cart-td");
+      columnOfPrice.innerText = intToPriceString(item.newPrice);
+
+      // cột thứ ba để người dùng chọn số lượng cần mua
+      const columnOfQuantity = document.createElement("div");
+      columnOfQuantity.classList.add("cart-td");
+      columnOfQuantity.innerHTML = `<div class="cart-quantity">
+          <input type="number" id="quantity" value="1" min="1" max="100">
+          </div>`;
+
+      // cột thứ tư là tổng giá của mặt hàng = số lượng * giá
+      const columnOfTotal = document.createElement("div");
+      columnOfTotal.id = "total-cost";
+      columnOfTotal.classList.add("cart-td");
+      columnOfTotal.innerText = intToPriceString(item.newPrice);
+
+      // cột thứ 5 chứa nút để người dùng xóa mặt hàng
+      const deleteItem = document.createElement("div");
+      deleteItem.classList.add("cart-td");
+      deleteItem.innerHTML =
+        '<ion-icon class="cart-delete-item" name="trash-outline"></ion-icon>';
+
+      // hàng hoàn chỉnh
+      const rowOfItem = document.createElement("div");
+      rowOfItem.id = `${item.id}`;
+      rowOfItem.classList.add("cart-tr");
+      rowOfItem.append(
+        columnOfProduct,
+        columnOfPrice,
+        columnOfQuantity,
+        columnOfTotal,
+        deleteItem
+      );
+
+      const quantity = rowOfItem.querySelector(`#quantity`);
+
+      // Sử dụng một hàm ẩn danh để lưu trữ giá của mặt hàng, khi người dùng thay đổi số lượng
+      // thì tổng giá tự động thay đổi
+      (function (price, totalElement) {
+        quantity.addEventListener("input", () => {
+          totalElement.innerText = intToPriceString(price * quantity.value);
+          const finalTotalCost = cartTable.querySelector("#final-total-cost");
+          if (finalTotalCost) {
+            finalTotalCost.innerText = intToPriceString(totalCosting());
+          }
+        });
+      })(item.newPrice, columnOfTotal);
+
+      // Thêm sự kiện xóa mặt hàng
+      rowOfItem.addEventListener("click", (event) => {
+        if (
+          event.target.closest(".cart-delete-item") &&
+          confirm("Bạn có chắc muốn xóa mặt hàng này?")
+        ) {
+          for (let i = 0; i < cart.length; ++i) {
+            if (cart[i].id === rowOfItem.id) {
+              cart.splice(i, 1);
+              localStorage.setItem("cart", JSON.stringify(cart));
+              break;
+            }
+          }
+
+          // nếu giỏ hàng không còn gì
+          if (cart.length === 0) {
+            document.querySelector(".full-screen-box.cart-section").remove();
+            showCartSection();
+          } else {
+            rowOfItem.remove();
+            const finalTotalCost = cartTable.querySelector("#final-total-cost");
+            if (finalTotalCost) {
+              finalTotalCost.innerText = intToPriceString(totalCosting());
+            }
+          }
+        }
+      });
+
+      // thêm hàng vào giỏ hàng
+      tbody.append(rowOfItem);
+    }
+
+    // cart table
+    const cartTable = document.createElement("div");
+    cartTable.classList.add("cart-table");
+    cartTable.append(thead, tbody);
+
+    cartContainer.append(cartTable);
+
+    // cart-tfoot
+    const tfoot = document.createElement("div");
+    tfoot.classList.add("cart-tfoot");
+    tfoot.innerHTML = `<div class="cart-tr">
+        <div class="cart-th"></div>
+        <div class="cart-th"></div>
+        <div class="cart-th"></div>
+        <div id="final-total-cost" class="cart-th">${intToPriceString(
+          totalCosting()
+        )}</div>
+        <div class="cart-th"></div>
+        </div>`;
+    cartTable.append(tfoot);
+
+    // cart-options
+    const deleteAllItems = document.createElement("button");
+    deleteAllItems.classList.add("delete-all-items");
+    deleteAllItems.innerText = "Xóa tất cả";
+
+    const placeAnOrder = document.createElement("button");
+    placeAnOrder.classList.add("place-an-order");
+    placeAnOrder.innerText = "Chốt đơn ngay <3";
+
+    const cartOptions = document.createElement("div");
+    cartOptions.classList.add("cart-options");
+    cartOptions.append(deleteAllItems, placeAnOrder);
+    cartContainer.append(cartOptions);
+  }
 
   // Thêm sự kiện cho nút close
   closeBtn.addEventListener("click", () => {
     cartSection.remove();
   });
 };
+
 // PHẦN NÀY ĐỂ KIỂM TRA ĐĂNG NHẬP
 const checkSignin = () => {
   const getActiveUser = localStorage.getItem("activeUser");
@@ -1113,12 +1292,6 @@ const checkSignin = () => {
         </span>
       `;
     }
-
-    // Thêm sự kiện cho nút giỏ hàng
-    headerNav.querySelector("#cart").addEventListener("click", (event) => {
-      event.preventDefault();
-      showCartSection();
-    });
   }
   //Nếu chưa đăng nhập
   else {
@@ -1127,12 +1300,16 @@ const checkSignin = () => {
       event.preventDefault();
       showSigninSection();
     });
-    // Thêm sự kiện cho nút giỏ hàng
-    headerNav.querySelector("#cart").addEventListener("click", (event) => {
-      event.preventDefault();
-      alert("Hãy đăng nhập để mở giỏ hàng của bạn!");
-    });
   }
+
+  // Thêm sự kiện cho nút giỏ hàng
+  document.body.addEventListener("click", (event) => {
+    event.preventDefault();
+    const cart = event.target.closest("#cart");
+    if (cart)
+      if (getActiveUser) showCartSection();
+      else alert("Hãy đăng nhập để mở giỏ hàng của bạn!");
+  });
 
   // Thêm sự kiện cho nút đăng xuất và nút quản trị của admin
   headerNav.addEventListener("click", (event) => {
