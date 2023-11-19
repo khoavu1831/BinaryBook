@@ -272,7 +272,7 @@ const createAdmin = () => {
   // Nếu không thông tin tài khoản admin trong localStorage thì tạo nó và đẩy vào
   if (localStorage.getItem("users") === null) {
     const users = [];
-    let user = {
+    const user = {
       username: "admin",
       password: "admin",
       fullName: "Mai Trần Tuấn Kiệt",
@@ -367,12 +367,16 @@ const createProductDiv = (book) => {
       cart = JSON.parse(localStorage.getItem("cart"));
 
     addedBook = book;
-    cart.push(addedBook);
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    alert(
-      `${addedBook.title} đã được thêm vào giỏ! Hãy kiểm tra giỏ hàng và nhận sách ngay!`
-    );
+    // Kiểm tra nếu đã có sản phẩm này trong giỏ hàng
+    if (cart.some((book) => JSON.stringify(book) === JSON.stringify(addedBook)))
+      alert("Bạn đã thêm sản phẩm này vào giỏ từ trước rồi :))");
+    else {
+      cart.unshift(addedBook);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert(
+        `${addedBook.title} đã được thêm vào giỏ! Hãy kiểm tra giỏ hàng và nhận sách ngay!`
+      );
+    }
   });
 
   // them cac thanh phan vao div bao quat
@@ -711,7 +715,7 @@ const showSearchResults = (books) => {
   const searchResults = document.createElement("section");
   searchResults.classList.add("search-and-filter", "full-screen-box");
   searchResults.append(safArea, products);
-  document.querySelector(".main").append(searchResults);
+  document.querySelector(".main").prepend(searchResults);
 
   // close-button
   closeBtn.addEventListener("click", () => {
@@ -817,7 +821,7 @@ const showSigninSection = () => {
   const signinSection = document.createElement("section");
   signinSection.classList.add("signin-section", "normal-box");
   signinSection.append(header, main, footer);
-  document.body.append(signinSection);
+  document.body.prepend(signinSection);
 
   closeBtn.addEventListener("click", () => {
     signinSection.remove();
@@ -1049,7 +1053,7 @@ const showSignupSection = () => {
   const signupSection = document.createElement("section");
   signupSection.classList.add("signin-section", "normal-box");
   signupSection.append(header, main, footer);
-  document.body.append(signupSection);
+  document.body.prepend(signupSection);
 
   closeBtn.addEventListener("click", () => {
     signupSection.remove();
@@ -1062,6 +1066,7 @@ const showSignupSection = () => {
   });
 };
 
+// PHẦN NÀY CHO GIỎ HÀNG VÀ LỊCH SỬ ĐẶT HÀNG
 // Hàm để hiển thị giỏ hàng
 const showCartSection = () => {
   // close button
@@ -1072,13 +1077,14 @@ const showCartSection = () => {
   // cart title
   const activeUser = JSON.parse(localStorage.getItem("activeUser"));
   const title = document.createElement("div");
-  title.classList.add("cart-title");
-  title.innerHTML = `<p>${activeUser.fullName} ơi,</p> 
-        <p>kiểm tra lại các mục đã chọn và nhấn Chốt đơn ngay để nhận sách bạn nhé!</p>`;
+  title.classList.add("cart-section-title");
+  title.innerHTML = `<h1>${activeUser.fullName} ơi,</h1> 
+        <h2>kiểm tra lại các mục đã chọn và nhấn Chốt đơn ngay để nhận sách bạn nhé!</h2>`;
 
   // cart-container
   const cartContainer = document.createElement("div");
   cartContainer.classList.add("cart-ctn");
+  cartContainer.innerHTML = `<h2 class="cart-title">Giỏ hàng của bạn</h2>`;
 
   // cart section
   const cartSection = document.createElement("section");
@@ -1089,9 +1095,9 @@ const showCartSection = () => {
   // nếu trong giỏ hàng chưa có gì
   if (
     localStorage.getItem("cart") === null ||
-    localStorage.getItem("cart") == "[]"
+    localStorage.getItem("cart") === "[]"
   ) {
-    cartContainer.innerHTML = "<p>Không có sản phẩm nào trong giỏ! :(</p>";
+    cartContainer.innerHTML = "<p>- Không có sản phẩm nào trong giỏ! :(</p>";
   }
   // nếu trong giỏ hàng đã có sản phẩm
   else {
@@ -1141,7 +1147,7 @@ const showCartSection = () => {
       const columnOfQuantity = document.createElement("div");
       columnOfQuantity.classList.add("cart-td");
       columnOfQuantity.innerHTML = `<div class="cart-quantity">
-          <input type="number" id="quantity" value="1" min="1" max="100">
+          <input type="number" class="quantity" value="1" min="1" max="100">
           </div>`;
 
       // cột thứ tư là tổng giá của mặt hàng = số lượng * giá
@@ -1168,7 +1174,7 @@ const showCartSection = () => {
         deleteItem
       );
 
-      const quantity = rowOfItem.querySelector(`#quantity`);
+      const quantity = rowOfItem.querySelector(`.quantity`);
 
       // Sử dụng một hàm ẩn danh để lưu trữ giá của mặt hàng, khi người dùng thay đổi số lượng
       // thì tổng giá tự động thay đổi
@@ -1239,15 +1245,134 @@ const showCartSection = () => {
     const deleteAllItems = document.createElement("button");
     deleteAllItems.classList.add("delete-all-items");
     deleteAllItems.innerText = "Xóa tất cả";
+    deleteAllItems.addEventListener("click", () => {
+      if (confirm("Bạn có chắc muốn xóa tất cả sản phẩm trong giỏ???")) {
+        localStorage.removeItem("cart");
+        cartSection.remove();
+        showCartSection();
+      }
+    });
 
     const placeAnOrder = document.createElement("button");
     placeAnOrder.classList.add("place-an-order");
     placeAnOrder.innerText = "Chốt đơn ngay <3";
+    placeAnOrder.addEventListener("click", () => {
+      // tạo các thuộc tính cho bill
+      const customer = JSON.parse(localStorage.getItem("activeUser"));
+      const finalTotalCost = totalCosting();
+      const d = new Date();
+      const orderDate = `${d.getDate()}-${d.getMonth() + 1}-${d.getFullYear()}`;
+      let orderInformation = "";
+      const allItems = cartSection.querySelectorAll(".cart-tbody .cart-tr");
+      for (item of allItems) {
+        const itemName = item.querySelector(".cart-product-name").innerText;
+        const itemQuantity = item.querySelector(".quantity").value;
+        orderInformation += `${itemQuantity} x ${itemName}; `;
+      }
+
+      // tạo ra bill
+      let bills = [];
+      if (localStorage.getItem("bills")) {
+        bills = JSON.parse(localStorage.getItem("bills"));
+      }
+      const bill = {
+        id: bills.length,
+        orderInformation: orderInformation.trim(),
+        finalTotalCost: finalTotalCost,
+        customer: customer,
+        orderDate: orderDate,
+        status: "Chưa xử lý",
+      };
+
+      // cập nhật bills lên localStorage
+      bills.unshift(bill);
+      localStorage.setItem("bills", JSON.stringify(bills));
+
+      // xóa cart và cập nhật lại màn hình
+      alert(
+        "Đặt hàng thành công! Đơn hàng của bạn sẽ được phê duyệt trong 1 giờ. Cảm ơn bạn đã tin tưởng BinaryBook <3!!!"
+      );
+      localStorage.removeItem("cart");
+      cartSection.remove();
+      showCartSection();
+    });
 
     const cartOptions = document.createElement("div");
     cartOptions.classList.add("cart-options");
     cartOptions.append(deleteAllItems, placeAnOrder);
+
     cartContainer.append(cartOptions);
+  }
+
+  // Nếu đã có lịch sử đặt hàng
+  if (localStorage.getItem("bills") && localStorage.getItem("bills") !== "[]") {
+    // Kiểm tra xem có bill nào thuộc về người dùng hiện tại hay không
+    const temp = JSON.parse(localStorage.getItem("bills"));
+    const bills = temp.filter(
+      (bill) => JSON.stringify(bill.customer) === JSON.stringify(activeUser)
+    );
+
+    if (bills.length > 0) {
+      const orderHistory = document.createElement("div");
+      orderHistory.classList.add("oh-ctn");
+      orderHistory.innerHTML = `<h2 class="oh-title">Xem lịch sử đơn hàng của bạn ở đây</h2>
+          <div class="oh-table">
+            <div class="oh-thead">
+              <div class="oh-tr">
+              <div class="oh-th">Đơn hàng gồm</div>
+              <div class="oh-th">Tổng tiền</div>
+              <div class="oh-th">Ngày đặt</div>
+              <div class="oh-th">Trạng thái</div>
+            </div>
+          </div>
+            <div class="oh-tbody"></div>
+          </div>
+      `;
+      const orderTable = orderHistory.querySelector(".oh-table");
+
+      const orderTbody = orderHistory.querySelector(".oh-tbody");
+      // đưa các bill vào bảng
+      for (bill of bills) {
+        // Cột đầu tiên chứa thông tin đơn
+        const columnOfOrderInformation = document.createElement("div");
+        columnOfOrderInformation.classList.add("oh-td");
+        columnOfOrderInformation.style.fontWeight = "bold";
+        columnOfOrderInformation.style.lineHeight = "1.25";
+        columnOfOrderInformation.innerText = bill.orderInformation;
+
+        // cột thứ hai chứa tổng tiền
+        const columnOfFinalTotalCost = document.createElement("div");
+        columnOfFinalTotalCost.classList.add("oh-td");
+        columnOfFinalTotalCost.innerText = intToPriceString(
+          bill.finalTotalCost
+        );
+
+        // cột thứ ba chứa ngày đặt
+        const columnOfOrderDate = document.createElement("div");
+        columnOfOrderDate.classList.add("oh-td");
+        columnOfOrderDate.innerText = bill.orderDate;
+
+        // cột thứ tư chứa trạng thái
+        const columnOfStatus = document.createElement("div");
+        columnOfStatus.classList.add("oh-td");
+        columnOfStatus.innerText = bill.status;
+
+        // hàng hoàn chỉnh
+        const rowOfBill = document.createElement("div");
+        rowOfBill.classList.add("oh-tr");
+        rowOfBill.append(
+          columnOfOrderInformation,
+          columnOfFinalTotalCost,
+          columnOfOrderDate,
+          columnOfStatus
+        );
+
+        orderTbody.append(rowOfBill);
+      }
+
+      orderTable.append(orderTbody);
+      cartSection.append(orderHistory);
+    }
   }
 
   // Thêm sự kiện cho nút close
@@ -1303,10 +1428,11 @@ const checkSignin = () => {
   }
 
   // Thêm sự kiện cho nút giỏ hàng
-  document.body.addEventListener("click", (event) => {
+  document.querySelector(".header").addEventListener("click", (event) => {
     event.preventDefault();
     const cart = event.target.closest("#cart");
-    if (cart)
+    const toCart = event.target.closest("#to-cart");
+    if (cart || toCart)
       if (getActiveUser) showCartSection();
       else alert("Hãy đăng nhập để mở giỏ hàng của bạn!");
   });
