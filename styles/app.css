@@ -238,7 +238,7 @@ header, main, footer {
   box-sizing: border-box;
 	width: 80%;
   font-weight: bold;
-	font-size: .8rem;
+	font-size: .825rem;
   line-height: 1.2;
 }
 .cart-quantity {
@@ -560,7 +560,7 @@ header, main, footer {
 }
 .saf-area {
   width: 100%;
-  height: 15%;
+  height: 8rem;
   padding: .5rem 5%;
   border-bottom: 3px solid #2b0f42;
 
@@ -571,20 +571,20 @@ header, main, footer {
   align-items: center;
 
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.6);
-  background: rgb(255,150,181);
-  background: linear-gradient(45deg, rgba(255,150,181,1) 0%, rgba(255,200,109,1) 35%, rgba(171,255,154,1) 70%, rgba(0,213,255,1) 100%);
-}
+  background-color: #ffd15d;
+  }
 .filter {
   box-sizing: border-box;
   height: 50%;
   width: 100%;
   display: flex;
-  flex-flow: row row-reverses;
+  flex-flow: row nowrap;
   justify-content: flex-start;
   align-items: center;
   padding: 0 15%;
 }
 .filter-category {
+  box-sizing: border-box;
   height: 80%;
   width: auto;
   border-radius: 1rem;
@@ -595,18 +595,22 @@ header, main, footer {
   font-size: .8rem;
   font-weight: 600;
   font-family: 'Open Sans', sans-serif;
+  background-color: #caf0f8;
 }
 .filter-price {
+  box-sizing: border-box;
   height: 80%;
   width: 25%;
   border-radius: 1rem;
   border: none;
   outline: none;
-  padding: 0 0 0 1rem;
+  padding: 0 1rem;
   font-size: .8rem;
   font-weight: 600;
   font-family: 'Open Sans', sans-serif;
+  text-align: center;
   caret-color: #06f;
+  background-color: rgba(255,255,255, .75);
 }
 .filter-price::placeholder {
   color:#b0b0b0;
@@ -614,6 +618,7 @@ header, main, footer {
 .filter-price:focus {
   outline: 2px solid rgba(168, 203, 255, .5);
   color: #06f;
+  background-color: #ffe5ec;
 }
 .saf-products {
   width: 100%;
@@ -841,7 +846,7 @@ header, main, footer {
   margin-top: 1rem;
   width: 100%;
   height: 2rem;
-  border-radius: 10%;
+  border-radius: 20%;
   background: rgb(255,255,255);
   background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(153,194,255,0.4) 20%, rgba(0,102,255,0.8) 50%, rgba(153,194,255,0.4) 80%, rgba(255,255,255,0) 100%);
   box-sizing: border-box;
@@ -863,6 +868,7 @@ header, main, footer {
   text-decoration: none;
   font-size: 1rem;
   font-weight: bold;
+  font-family: 'Roboto Slab', sans-serif;
   color: white;
   box-sizing: border-box;
   border-left: 2px solid white; 
@@ -987,6 +993,7 @@ header, main, footer {
   box-sizing: border-box;
   height: 45%;
   width: 100%;
+  padding: 0 15%;
   margin: 0 auto .5rem;
 
   display: flex;
@@ -1001,18 +1008,18 @@ header, main, footer {
   margin: 0;
   outline: none;
   border: none;
-  border-radius: 15px 0 0 15px;
   background-color: white;
   color: black;
 }
 .search-box > button {
-  border-radius: 0 15px 15px 0;
+  width: 20%;
   background: rgb(255,255,255);
   background: linear-gradient(90deg, rgba(153,194,255,1) 0%, rgba(0,102,255,1) 100%);
   color: white;
   font-size: .8rem;
   font-weight: 600;
   font-family: 'Open Sans', sans-serif;
+  border-radius: 0 20px 20px 0;
 }
 .search-box > button:hover, .signin:hover {
   color: black;
@@ -1021,11 +1028,15 @@ header, main, footer {
 }
 .search-box > input {
   box-sizing: border-box;
-  width: 15rem;
+  width: 80%;
   font-size: .8rem;
   font-weight: 600;
   font-family: 'Open Sans', sans-serif;
   caret-color: #ff1c58;
+  background-color: rgba(255, 255, 255, .75);
+  border-radius: 20px 0 0 20px;
+  padding: 0 1.5rem;
+  text-align: center;
 }
 .search-box > input::placeholder {
   color:#b0b0b0;
@@ -1033,6 +1044,7 @@ header, main, footer {
 .search-box > input:focus {
   outline: 2px solid rgba(255, 189, 207, .5);
   color: #ff1c58;
+  background-color: #edf6f9;
 }
 .header-nav-area {
   height: 40px;

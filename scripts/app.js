@@ -649,7 +649,10 @@ const showSearchResults = (books) => {
   const input = document.createElement("input");
   input.classList.add("input-search");
   input.setAttribute("type", "text");
-  input.setAttribute("placeholder", "Tìm theo tên sách, tên tác giả,...");
+  input.setAttribute(
+    "placeholder",
+    "Tìm theo tên sách hoặc tên tác giả, sử dụng bộ lọc nếu cần"
+  );
 
   const btn = document.createElement("button");
   btn.innerText = "Tìm kiếm";
@@ -680,8 +683,8 @@ const showSearchResults = (books) => {
       <option value="regex">Regex</option>
       <option value="typescript">TypeScript</option>
     </select>
-    <input class="filter-price" type="text" id="from-price" placeholder="Từ (Việt Nam Đồng)"> — 
-    <input class="filter-price" type="text" id="to-price" placeholder="Đến (Việt Nam Đồng)">`;
+    <input class="filter-price" type="number" min="0" id="from-price" placeholder="Từ (VNĐ)"> — 
+    <input class="filter-price" type="number" min="0" id="to-price" placeholder="Đến (VNĐ)">`;
 
   searchForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -1192,7 +1195,7 @@ const showCartSection = () => {
       rowOfItem.addEventListener("click", (event) => {
         if (
           event.target.closest(".cart-delete-item") &&
-          confirm("Bạn có chắc muốn xóa mặt hàng này?")
+          confirm("Bạn có chắc muốn xóa sản phẩm này?")
         ) {
           for (let i = 0; i < cart.length; ++i) {
             if (cart[i].id === rowOfItem.id) {
@@ -1315,7 +1318,7 @@ const showCartSection = () => {
     if (bills.length > 0) {
       const orderHistory = document.createElement("div");
       orderHistory.classList.add("oh-ctn");
-      orderHistory.innerHTML = `<h2 class="oh-title">Xem lịch sử đơn hàng của bạn ở đây</h2>
+      orderHistory.innerHTML = `<h2 class="oh-title">Xem lịch sử đặt hàng của bạn ở đây</h2>
           <div class="oh-table">
             <div class="oh-thead">
               <div class="oh-tr">
