@@ -272,7 +272,7 @@ const createAdmin = () => {
   // Nếu không thông tin tài khoản admin trong localStorage thì tạo nó và đẩy vào
   if (localStorage.getItem("users") === null) {
     const users = [];
-    let user = {
+    const user = {
       username: "admin",
       password: "admin",
       fullName: "Mai Trần Tuấn Kiệt",
@@ -284,16 +284,27 @@ const createAdmin = () => {
     localStorage.setItem("users", JSON.stringify(users));
   }
 };
-// Hàm kiểm tra chuỗi rỗng hoặc chir chứa khoảng trắng
-const isEmptyStringOrWhiteSpaces = (string) => string.trim().length === 0;
-// Hàm kiểm tra một chuỗi có phải là số điện thoại hợp lệ hay không
+// Hàm kiểm tra xem một chuỗi có phải là một số điện thoại hợp lệ hay không
 const isValidPhoneNumber = (phoneNumber) => {
   const regex = /^0[35789]\d{8}$/;
   return regex.test(phoneNumber);
 };
+// Hàm kiểm tra xem một chuỗi có phải là một username hợp lệ hay không
+const isValidUsername = (username) => {
+  const regex = /^[a-zA-Z]\w{5,17}$/;
+  return regex.test(username);
+};
+// Hàm kiểm tra xem một chuỗi có phải là một password hợp lệ hay không
+const isValidPassword = (password) => {
+  const regex = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,24}$/;
+  return regex.test(password);
+};
 // Hàm để định dạng số nguyên thành chuỗi giá tiền
 const intToPriceString = (priceInt) =>
   priceInt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " đ";
+// Loại bỏ ký hiệu tiền tệ và dấu chấm, sau đó chuyển đổi chuỗi thành số nguyên
+const priceStringToInt = (priceString) =>
+  parseInt(priceString.replace(" đ", "").replace(/\./g, ""));
 // Hàm tạo một div product cho một sản phẩm book
 const createProductDiv = (book) => {
   // tao div product (div bao quat ben ngoai)
@@ -345,6 +356,28 @@ const createProductDiv = (book) => {
   const addToCart = document.createElement("button");
   addToCart.append(addToCartIcon, addToCartSpan);
   addToCart.classList.add("add-to-cart");
+  addToCart.addEventListener("click", () => {
+    if (!localStorage.getItem("activeUser")) {
+      alert("Bạn phải đăng nhập để mua hàng!");
+      return;
+    }
+
+    let cart = [];
+    if (localStorage.getItem("cart"))
+      cart = JSON.parse(localStorage.getItem("cart"));
+
+    addedBook = book;
+    // Kiểm tra nếu đã có sản phẩm này trong giỏ hàng
+    if (cart.some((book) => JSON.stringify(book) === JSON.stringify(addedBook)))
+      alert("Bạn đã thêm sản phẩm này vào giỏ từ trước rồi :))");
+    else {
+      cart.unshift(addedBook);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert(
+        `${addedBook.title} đã được thêm vào giỏ! Hãy kiểm tra giỏ hàng và nhận sách ngay!`
+      );
+    }
+  });
 
   // them cac thanh phan vao div bao quat
   productDiv.append(
@@ -358,25 +391,69 @@ const createProductDiv = (book) => {
   // tra ve div bao quat
   return productDiv;
 };
-// Hàm hiển thị các sản phẩm lên trang web
+// Hàm để thêm sách vào vùng chứa
+const addBooksToContainer = (containerSelector, books) => {
+  const productsContainer = document.querySelector(containerSelector);
+  for (book of books) {
+    productsContainer.append(createProductDiv(book));
+  }
+};
+// Hàm để hiển thị sách cho trang hiện tại
+const displayPage = (containerSelector, books) => {
+  const productsContainer = document.querySelector(
+    containerSelector + " .products"
+  );
+  productsContainer.innerHTML = ""; // Xóa sách trang hiện tại
+  for (let book of books) {
+    productsContainer.append(createProductDiv(book)); // Thêm sách mới
+  }
+};
+// Hàm để phân trang cho một vùng chứa sản phẩm
+const paginate = (containerSelector, books, booksPerPage) => {
+  // Chia mảng books thành các trang
+  const pages = [];
+  for (let i = 0; i < books.length; i += booksPerPage) {
+    pages.push(books.slice(i, i + booksPerPage));
+  }
+  // Tạo các liên kết phân trang
+  const pagination = document.querySelector(containerSelector + " .pagination");
+  pagination.innerHTML = ""; // Xóa liên kết phân trang hiện tại
+  for (let i = 0; i < pages.length; i++) {
+    const link = document.createElement("a");
+    link.href = "#";
+    link.innerText = i + 1;
+    link.classList.add("paginating-link");
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+
+      // Xóa kiểu CSS của trang hiện tại
+      const currentLink = pagination.querySelector(".current-page");
+      if (currentLink) {
+        currentLink.classList.remove("current-page");
+      }
+
+      // Cập nhật trang hiện tại và áp dụng kiểu CSS
+      currentPage = i;
+      link.classList.add("current-page");
+
+      displayPage(containerSelector, pages[i]);
+    });
+    pagination.appendChild(link); // Thêm liên kết phân trang vào
+  }
+
+  // Hiển thị trang đầu tiên
+  displayPage(containerSelector, pages[0]);
+  pagination.querySelector(".paginating-link").classList.add("current-page"); // Áp dụng kiểu CSS cho trang đầu tiên
+};
+// Hàm hiển thị sách lên trang web
 const showProducts = () => {
   // Thêm sách vào vùng chứa best-seller-----------------
   const bestSellerBooks = JSON.parse(localStorage.getItem("bestSellerBooks"));
-  const bestSellerProductsContainer = document.querySelector(
-    ".best-seller .products"
-  );
-  for (book of bestSellerBooks) {
-    bestSellerProductsContainer.append(createProductDiv(book));
-  }
+  addBooksToContainer(".best-seller .products", bestSellerBooks);
 
   // Thêm sách vào vùng chứa well-known--------------------
   const wellKnownBooks = JSON.parse(localStorage.getItem("wellKnownBooks"));
-  const wellKnownProductsContainer = document.querySelector(
-    ".well-known .products"
-  );
-  for (book of wellKnownBooks) {
-    wellKnownProductsContainer.append(createProductDiv(book));
-  }
+  addBooksToContainer(".well-known .products", wellKnownBooks);
 
   // PHẦN NÀY ĐỂ PHÂN TRANG
   const width = window.innerWidth;
@@ -398,63 +475,13 @@ const showProducts = () => {
     else booksPerPage = 8;
 
     // Gọi lại hàm paginate sau khi booksPerPage thay đổi
-    paginate(".best-seller", bestSellerBooks);
-    paginate(".well-known", wellKnownBooks);
+    paginate(".best-seller", bestSellerBooks, booksPerPage);
+    paginate(".well-known", wellKnownBooks, booksPerPage);
   });
-  // Hàm để phân trang cho một vùng chứa sản phẩm
-  const paginate = (containerSelector, books) => {
-    // Chia mảng books thành các trang
-    const pages = [];
-    for (let i = 0; i < books.length; i += booksPerPage) {
-      pages.push(books.slice(i, i + booksPerPage));
-    }
-    // Tạo các liên kết phân trang
-    const pagination = document.querySelector(
-      containerSelector + " .pagination"
-    );
-    pagination.innerHTML = ""; // Xóa liên kết phân trang hiện tại
-    for (let i = 0; i < pages.length; i++) {
-      const link = document.createElement("a");
-      link.href = "#";
-      link.innerText = i + 1;
-      link.classList.add("paginating-link");
-      link.addEventListener("click", (event) => {
-        event.preventDefault();
-
-        // Xóa kiểu CSS của trang hiện tại
-        const currentLink = pagination.querySelector(".current-page");
-        if (currentLink) {
-          currentLink.classList.remove("current-page");
-        }
-
-        // Cập nhật trang hiện tại và áp dụng kiểu CSS
-        currentPage = i;
-        link.classList.add("current-page");
-
-        displayPage(containerSelector, pages[i]);
-      });
-      pagination.appendChild(link); // Thêm liên kết phân trang vào
-    }
-
-    // Hiển thị trang đầu tiên
-    displayPage(containerSelector, pages[0]);
-    pagination.querySelector(".paginating-link").classList.add("current-page"); // Áp dụng kiểu CSS cho trang đầu tiên
-  };
-
-  // Hàm để hiển thị sách cho trang hiện tại
-  const displayPage = (containerSelector, books) => {
-    const productsContainer = document.querySelector(
-      containerSelector + " .products"
-    );
-    productsContainer.innerHTML = ""; // Xóa sách trang hiện tại
-    for (let book of books) {
-      productsContainer.append(createProductDiv(book)); // Thêm sách mới
-    }
-  };
 
   // Phân trang cho bestSellerBooks và wellKnownBooks
-  paginate(".best-seller", bestSellerBooks);
-  paginate(".well-known", wellKnownBooks);
+  paginate(".best-seller", bestSellerBooks, booksPerPage);
+  paginate(".well-known", wellKnownBooks, booksPerPage);
   //----------------------------end
 };
 
@@ -482,9 +509,27 @@ const createSubheader = () => {
   for (subheaderItemTitle of subheaderItemTitles) {
     const subheaderItemLink = document.createElement("a");
     subheaderItemLink.innerText = subheaderItemTitle[0];
+    const category = subheaderItemTitle[1];
     subheaderItemLink.classList.add("sub-header-item");
     subheaderItemLink.setAttribute("href", "");
     nav.append(subheaderItemLink);
+
+    // Thêm sự kiện khi click
+    subheaderItemLink.addEventListener("click", (event) => {
+      event.preventDefault();
+
+      const bestSellerBooks = JSON.parse(
+        localStorage.getItem("bestSellerBooks")
+      );
+      const wellKnownBooks = JSON.parse(localStorage.getItem("wellKnownBooks"));
+      const allBooks = [...bestSellerBooks, ...wellKnownBooks];
+
+      const filteredBooks = allBooks.filter(
+        (book) => book.category === category
+      );
+
+      showSearchResults(filteredBooks);
+    });
   }
   subheaderItemsContainer.append(nav);
 };
@@ -524,6 +569,7 @@ const addShowMoreDetailsEvent = (ctn) => {
   container.addEventListener("click", (event) => {
     const img = event.target.closest(".product-image");
     if (img) {
+      document.querySelector(".hide-screen").style.display = "block";
       const product = img.closest(".product");
       const bookId = product.id; // Lấy id của sách từ id của div.product
       const book = [...bestSellerBooks, ...wellKnownBooks].find(
@@ -561,13 +607,14 @@ const addShowMoreDetailsEvent = (ctn) => {
       container.append(moreDetails); // hiển thị nó
 
       closeBtn.addEventListener("click", () => {
-        moreDetails.remove(); // xóa moreDetails khỏi DOM
+        moreDetails.remove();
+        document.querySelector(".hide-screen").style.display = "none";
       });
     }
   });
 };
 
-// PHẦN NÀY CHO NÚT TÌM KIẾM
+// PHẦN NÀY CHO CHỨC NĂNG TÌM KIẾM
 // Hàm tìm kiếm sách theo từ khóa, loại và khoảng giá
 const searchBooks = (
   keyword,
@@ -602,14 +649,20 @@ const showSearchResults = (books) => {
   const input = document.createElement("input");
   input.classList.add("input-search");
   input.setAttribute("type", "text");
-  input.setAttribute("placeholder", "Tìm theo tên sách, tên tác giả,...");
+  input.setAttribute(
+    "placeholder",
+    "Tìm theo tên sách hoặc tên tác giả, sử dụng bộ lọc nếu cần"
+  );
 
   const btn = document.createElement("button");
   btn.innerText = "Tìm kiếm";
 
+  const closeBtn = document.createElement("button");
+  closeBtn.classList.add("signin-close-button");
+  closeBtn.innerText = "+";
+
   const searchForm = document.createElement("form");
   searchForm.classList.add("search-box");
-  searchForm.id = "search-again";
   searchForm.append(input, btn);
 
   const filter = document.createElement("div");
@@ -630,32 +683,29 @@ const showSearchResults = (books) => {
       <option value="regex">Regex</option>
       <option value="typescript">TypeScript</option>
     </select>
-    <input class="filter-price" type="text" id="from-price" placeholder="Từ (Việt Nam Đồng)"> — 
-    <input class="filter-price" type="text" id="to-price" placeholder="Đến (Việt Nam Đồng)">`;
+    <input class="filter-price" type="number" min="0" id="from-price" placeholder="Từ (VNĐ)">—
+    <input class="filter-price" type="number" min="0" id="to-price" placeholder="Đến (VNĐ)">`;
 
   searchForm.addEventListener("submit", (event) => {
-    event.preventDefault(); // Ngăn chặn hành vi mặc định của form
+    event.preventDefault();
     const keyword = searchForm.querySelector(".input-search").value;
     const category = filter.querySelector(".filter-category").value;
     let fromPrice = filter.querySelector("#from-price").value;
     let toPrice = filter.querySelector("#to-price").value;
-    if (fromPrice === "" && toPrice === "") {
+    if (!fromPrice && !toPrice) {
       fromPrice = "0";
       toPrice = "999999999";
     }
-    console.log("fn:" + fromPrice);
-    console.log("fn:" + toPrice);
-    console.log("fn:" + category);
 
     const books = searchBooks(keyword, category, fromPrice, toPrice);
-    console.log(books);
+
     showSearchResults(books);
     searchResults.remove();
   });
 
   const safArea = document.createElement("div");
   safArea.classList.add("saf-area");
-  safArea.append(searchForm, filter);
+  safArea.append(searchForm, filter, closeBtn);
 
   // div.saf-products
   const products = document.createElement("div");
@@ -664,106 +714,141 @@ const showSearchResults = (books) => {
     products.append(createProductDiv(book));
   }
 
-  // button.close-btn
-  const closeBtn = document.createElement("button");
-  closeBtn.classList.add("saf-close");
-  closeBtn.innerText = "Đóng Tìm Kiếm";
-  closeBtn.addEventListener("click", () => {
-    searchResults.remove(); // xóa searchResults khỏi DOM
-  });
-
   // section.search-and-filter
   const searchResults = document.createElement("section");
   searchResults.classList.add("search-and-filter", "full-screen-box");
-  searchResults.append(safArea, products, closeBtn);
-  document.querySelector(".main").append(searchResults); // hiển thị nó
+  searchResults.append(safArea, products);
+  document.querySelector(".main").prepend(searchResults);
+
+  // close-button
+  closeBtn.addEventListener("click", () => {
+    searchResults.remove();
+  });
 };
 
 // PHẦN NÀY CỦA CHỨC NĂNG ĐĂNG NHẬP ĐĂNG KÝ
 // Hàm thực hiện đăng nhập
-const signin = () => {
+const signin = (event) => {
+  event.preventDefault();
+
   const signinSection = document.querySelector(
     "section.signin-section.normal-box"
   );
+  const errorsArea = signinSection.querySelector(".show-errors");
+
   const form = signinSection.querySelector(".signin-main form");
   let username = form.querySelector("#username").value;
   let password = form.querySelector("#password").value;
 
+  // Kiểm tra nếu có trường bị bỏ trống
   if (!username || !password) {
-    alert("KHÔNG ĐƯỢC BỎ TRỐNG BẤT CỨ TRƯỜNG NÀO!");
+    if (errorsArea.querySelector("#empty-field")) {
+      return false;
+    }
+
+    const emptyField = document.createElement("li");
+    emptyField.id = "empty-field";
+    emptyField.innerHTML =
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Không được bỏ trống bất cứ trường nào!';
+
+    errorsArea.append(emptyField);
+    errorsArea.style.display = "block";
+
     return false;
+  } else {
+    errorsArea.innerHTML = "";
+    errorsArea.style.display = "none";
   }
 
   const users = JSON.parse(localStorage.getItem("users"));
   for (let user of users)
-    if (username == user.username && password == user.password) {
+    if (username === user.username && password === user.password) {
       signinSection.remove();
+      // set active user
       localStorage.setItem("activeUser", JSON.stringify(user));
+      // set cart
+      localStorage.setItem("cart", JSON.stringify([]));
+      // reload
       window.location.reload(true);
       return true;
     }
 
-  alert("Kiểm tra lại thông tin đăng nhập!");
+  if (!errorsArea.querySelector("#incorrect-input")) {
+    const incorrectInput = document.createElement("li");
+    incorrectInput.id = "incorrect-input";
+    incorrectInput.innerHTML =
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Kiểm tra lại thông tin đăng nhập!';
+    errorsArea.append(incorrectInput);
+    errorsArea.style.display = "block";
+  }
+
   return false;
 };
 // Hàm để hiển thị phần đăng nhập
 const showSigninSection = () => {
+  document.querySelector(".hide-screen").style.display = "block";
   // signin-header
   const title = document.createElement("h1");
   title.innerText = "Chào mừng bạn quay trở lại!";
   const closeBtn = document.createElement("button");
+  closeBtn.classList.add("signin-close-button");
   closeBtn.innerText = "+";
 
   const header = document.createElement("header");
   header.classList.add("signin-header");
-  header.append(title, closeBtn);
+  header.append(title);
 
   // signin-main
   const form = document.createElement("form");
   form.innerHTML = `
-  <div class="signin-column-one">
+    <ul class="show-errors"></ul>
     <label for="username">Nhập tên đăng nhập:</label>
+    <input type="text" placeholder="Tên đăng nhập" id="username" />
     <label for="password">Nhập mật khẩu:</label>
-  </div>
-  <div class="signin-column-two">
-    <input type="text" placeholder="Tên đăng nhập" id="username" required />
-    <input type="password" placeholder="Mật khẩu" id="password" required />
-  </div>
+    <input type="password" placeholder="Mật khẩu" id="password" />
+    <input type="submit" value="Đăng nhập ngay" class="signin-btn"/>
 `;
+
   const main = document.createElement("main");
   main.classList.add("signin-main");
   main.append(form);
 
   // signin-footer
-  const signinBtn = document.createElement("button");
-  signinBtn.innerText = "Đăng nhập ngay";
-
   const toSignup = document.createElement("p");
   toSignup.innerText = "Chưa có tài khoản? Nhấn vào đây để đăng ký";
 
   const footer = document.createElement("footer");
   footer.classList.add("signin-footer");
-  footer.append(signinBtn, toSignup);
+  footer.append(toSignup);
 
   const signinSection = document.createElement("section");
   signinSection.classList.add("signin-section", "normal-box");
-  signinSection.append(header, main, footer);
-  document.body.append(signinSection);
+  signinSection.append(closeBtn, header, main, footer);
+  document.body.prepend(signinSection);
 
   closeBtn.addEventListener("click", () => {
     signinSection.remove();
+    document.querySelector(".hide-screen").style.display = "none";
   });
-  signinBtn.addEventListener("click", signin);
+
+  // sự kiện của nút Đăng nhập ngay
+  signinSection.querySelector(".signin-btn").addEventListener("click", signin);
+
   toSignup.addEventListener("click", () => {
     signinSection.remove();
     showSignupSection();
   });
 };
 // Hàm thực hiện đăng ký
-const signup = () => {
+const signup = (event) => {
+  event.preventDefault();
+
   const signupSection = document.querySelector(
     "section.signin-section.normal-box"
   );
+
+  const errorsArea = signupSection.querySelector(".show-errors");
+
   const fullName = signupSection.querySelector("#fullName").value;
   const address = signupSection.querySelector("#address").value;
   const phone = signupSection.querySelector("#phone").value;
@@ -771,6 +856,7 @@ const signup = () => {
   const password = signupSection.querySelector("#password").value;
   const repassword = signupSection.querySelector("#repassword").value;
 
+  // Kiểm tra nếu có bất kỳ trường nào bị bỏ trống
   if (
     !fullName ||
     !address ||
@@ -779,43 +865,136 @@ const signup = () => {
     !password ||
     !repassword
   ) {
-    alert("KHÔNG ĐƯỢC BỎ TRỐNG BẤT CỨ TRƯỜNG NÀO!");
+    if (errorsArea.querySelector("#empty-field")) {
+      return false;
+    }
+
+    const emptyField = document.createElement("li");
+    emptyField.id = "empty-field";
+    emptyField.innerHTML =
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Không được bỏ trống bất cứ trường nào!';
+
+    errorsArea.append(emptyField);
+    errorsArea.style.display = "block";
+
     return false;
+  } else {
+    errorsArea.innerHTML = "";
+    errorsArea.style.display = "none";
   }
+
+  // Kiểm tra nếu số điện thoại không hợp lệ
   if (!isValidPhoneNumber(phone)) {
-    alert(
-      "Số điện thoại không hợp lệ! Xin lưu ý rằng bạn không thể qua mặt chúng tôi bằng cách nhập một số điện thoại di động không tồn tại ở Việt Nam!!!"
-    );
+    if (errorsArea.querySelector("#invalid-phone-number")) {
+      return false;
+    }
+
+    const invalidPhoneNumber = document.createElement("li");
+    invalidPhoneNumber.id = "invalid-phone-number";
+    invalidPhoneNumber.innerHTML =
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Số điện thoại không hợp lệ! Xin lưu ý rằng bạn không thể vượt qua lớp bảo mật của chúng tôi bằng cách nhập một số điện thoại di động không tồn tại ở Việt Nam!!!';
+
+    errorsArea.append(invalidPhoneNumber);
+    errorsArea.style.display = "block";
+
     signupSection.querySelector("#phone").focus();
     return false;
+  } else {
+    errorsArea.innerHTML = "";
+    errorsArea.style.display = "none";
   }
-  if (username.length < 6 || username.length > 18) {
-    alert("Tên đăng nhập nên có ít nhất 6 kí tự và tối đa 18 kí tự!");
+
+  // Kiểm tra nếu username không hợp lệ
+  if (!isValidUsername(username)) {
+    if (errorsArea.querySelector("#invalid-username")) {
+      return false;
+    }
+
+    const invalidUsername = document.createElement("li");
+    invalidUsername.id = "invalid-username";
+    invalidUsername.innerHTML =
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Tên đăng nhập nên có độ dài tối thiểu 6 và tối đa 18 kí tự, chỉ bao gồm chữ cái và số, kí tự đầu tiên phải là một chữ cái!';
+
+    errorsArea.append(invalidUsername);
+    errorsArea.style.display = "block";
+
     signupSection.querySelector("#username").focus();
     return false;
+  } else {
+    errorsArea.innerHTML = "";
+    errorsArea.style.display = "none";
   }
-  if (password.length < 8 || password.length > 24) {
-    alert("Mật khẩu nên có ít nhất 8 kí tự và tối đa 24 kí tự!");
+
+  // Kiểm tra nếu mật khẩu không hợp lệ
+  if (!isValidPassword(password)) {
+    if (errorsArea.querySelector("#invalid-password")) {
+      return false;
+    }
+
+    const invalidPassword = document.createElement("li");
+    invalidPassword.id = "invalid-password";
+    invalidPassword.innerHTML =
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Mật khẩu nên có độ dài tối thiểu 8 và tối đa 24 kí tự!';
+
+    errorsArea.append(invalidPassword);
+    errorsArea.style.display = "block";
+
     signupSection.querySelector("#password").focus();
     return false;
+  } else {
+    errorsArea.innerHTML = "";
+    errorsArea.style.display = "none";
   }
+
+  // Kiểm tra nếu mật khẩu xác nhận không khớp
   if (repassword !== password) {
-    alert("Mật khẩu xác nhận không khớp!");
+    if (errorsArea.querySelector("#invalid-repassword")) {
+      return false;
+    }
+
+    const invalidRepassword = document.createElement("li");
+    invalidRepassword.id = "invalid-repassword";
+    invalidRepassword.innerHTML =
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Mật khẩu xác nhận không đúng!';
+
+    errorsArea.append(invalidRepassword);
+    errorsArea.style.display = "block";
+
     signupSection.querySelector("#repassword").focus();
     return false;
+  } else {
+    errorsArea.innerHTML = "";
+    errorsArea.style.display = "none";
   }
 
   const users = JSON.parse(localStorage.getItem("users"));
+  // Kiểm tra nếu tên đăng nhập đã tồn tại
   for (let user of users)
     if (username === user.username) {
-      alert("TÊN ĐĂNG NHẬP ĐÃ TỒN TẠI!");
+      if (errorsArea.querySelector("#username-already-exists")) {
+        return false;
+      }
+
+      const usernameAlreadyExists = document.createElement("li");
+      usernameAlreadyExists.id = "username-already-exists";
+      usernameAlreadyExists.innerHTML =
+        '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Tên đăng nhập đã tồn tại!';
+
+      errorsArea.append(usernameAlreadyExists);
+      errorsArea.style.display = "block";
+
       signupSection.querySelector("#username").focus();
       return false;
+    } else {
+      errorsArea.innerHTML = "";
+      errorsArea.style.display = "none";
     }
 
   const date = new Date();
   const signupSince =
     date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
+
+  // tạo ra đối tượng user mới
   const newUser = {
     username: username,
     password: password,
@@ -825,7 +1004,7 @@ const signup = () => {
     signupSince: signupSince,
   };
 
-  users.push(newUser);
+  users.push(newUser); // đưa user mới vào mảng
   localStorage.setItem("users", JSON.stringify(users));
 
   alert("Bạn đã đăng ký thành công! Hãy đăng nhập để tiếp tục mua hàng!");
@@ -834,83 +1013,506 @@ const signup = () => {
 };
 // Hàm để hiển thị phần đăng ký
 const showSignupSection = () => {
+  document.querySelector(".hide-screen").style.display = "block";
   // signup-header
   const title = document.createElement("h1");
   title.innerText = "Tạo tài khoản mới!";
   const closeBtn = document.createElement("button");
+  closeBtn.classList.add("signin-close-button");
   closeBtn.innerText = "+";
 
   const header = document.createElement("header");
   header.classList.add("signin-header");
-  header.append(title, closeBtn);
+  header.append(title);
 
   // signup-main
   const form = document.createElement("form");
   form.innerHTML = `
-    <div class="signin-column-one">
-      <label for="fullName">Nhập họ và tên:</label>
-      <label for="address">Nhập địa chỉ:</label>
-      <label for="phone">Nhập số điện thoại:</label>
-      <label for="username">Nhập tên đăng nhập:</label>
-      <label for="password">Nhập mật khẩu:</label>
-      <label for="repassword">Xác nhận lại mật khẩu:</label>
-    </div>
-    <div class="signin-column-two">
-      <input type="text" placeholder="Họ và tên" id="fullName" required />
-      <input type="text" placeholder="Địa chỉ" id="address" required />
-      <input type="text" placeholder="Số điện thoại" id="phone" required />
-      <input type="text" placeholder="Tên đăng nhập" id="username" required />
-      <input type="password" placeholder="Mật khẩu" id="password" required />
-      <input type="password" placeholder="Nhập lại mật khẩu" id="repassword" required />
-    </div>
-  `;
+    <ul class="show-errors"></ul>
+    <label for="fullName">Nhập họ và tên:</label>
+    <input type="text" placeholder="Họ và tên" id="fullName" />
+    <label for="address">Nhập địa chỉ:</label>
+    <input type="text" placeholder="Địa chỉ" id="address" />
+    <label for="phone">Nhập số điện thoại:</label>
+    <input type="text" placeholder="Số điện thoại" id="phone" />
+    <label for="username">Nhập tên đăng nhập:</label>
+    <input type="text" placeholder="Tên đăng nhập" id="username" />
+    <label for="password">Nhập mật khẩu:</label>
+    <input type="password" placeholder="Mật khẩu" id="password" />
+    <label for="repassword">Xác nhận lại mật khẩu:</label>
+    <input type="password" placeholder="Nhập lại mật khẩu" id="repassword" />
+    <input type="submit" value="Đăng ký ngay" class="signin-btn"/>
+`;
+
   const main = document.createElement("main");
   main.classList.add("signin-main");
   main.append(form);
 
   // signup-footer
-  const signupBtn = document.createElement("button");
-  signupBtn.innerText = "Đăng kí ngay";
-
   const toSignin = document.createElement("p");
   toSignin.innerText = "Đã có tài khoản? Nhấn vào đây để đăng nhập";
 
   const footer = document.createElement("footer");
   footer.classList.add("signin-footer");
-  footer.append(signupBtn, toSignin);
+  footer.append(toSignin);
 
   const signupSection = document.createElement("section");
   signupSection.classList.add("signin-section", "normal-box");
-  signupSection.append(header, main, footer);
-  document.body.append(signupSection);
+  signupSection.append(closeBtn, header, main, footer);
+  document.body.prepend(signupSection);
 
   closeBtn.addEventListener("click", () => {
     signupSection.remove();
+    document.querySelector(".hide-screen").style.display = "none";
   });
-  signupBtn.addEventListener("click", signup);
+
+  signupSection.querySelector(".signin-btn").addEventListener("click", signup);
   toSignin.addEventListener("click", () => {
     signupSection.remove();
     showSigninSection();
   });
 };
 
-// PHẦN NÀY ĐỂ KIỂM TRA NGƯỜI DÙNG ĐÃ ĐĂNG NHẬP LÀ AI
-const checkSignin = () => {};
+// PHẦN NÀY CHO GIỎ HÀNG VÀ LỊCH SỬ ĐẶT HÀNG
+// Hàm để hiển thị giỏ hàng
+const showCartSection = () => {
+  // close button
+  const closeBtn = document.createElement("button");
+  closeBtn.classList.add("signin-close-button");
+  closeBtn.innerText = "+";
+
+  // cart title
+  const activeUser = JSON.parse(localStorage.getItem("activeUser"));
+  const title = document.createElement("div");
+  title.classList.add("cart-section-title");
+  title.innerHTML = `<h1>${activeUser.fullName} ơi,</h1> 
+        <h2>kiểm tra lại các mục đã chọn và nhấn Chốt đơn ngay để nhận sách bạn nhé!</h2>`;
+
+  // cart-container
+  const cartContainer = document.createElement("div");
+  cartContainer.classList.add("cart-ctn");
+  cartContainer.innerHTML = `<h2 class="cart-title">Giỏ hàng của bạn</h2>`;
+
+  // cart section
+  const cartSection = document.createElement("section");
+  cartSection.classList.add("full-screen-box", "cart-section");
+  cartSection.append(closeBtn, title, cartContainer);
+  document.body.prepend(cartSection);
+
+  // nếu trong giỏ hàng chưa có gì
+  if (
+    localStorage.getItem("cart") === null ||
+    localStorage.getItem("cart") === "[]"
+  ) {
+    cartContainer.innerHTML = "<p>- Không có sản phẩm nào trong giỏ! :(</p>";
+  }
+  // nếu trong giỏ hàng đã có sản phẩm
+  else {
+    const cart = JSON.parse(localStorage.getItem("cart"));
+    // Hàm tính tổng tiền
+    const totalCosting = () => {
+      let totalCost = 0;
+      const allTotals = cartSection.querySelectorAll("#total-cost");
+
+      for (total of allTotals) {
+        totalCost += priceStringToInt(total.innerText);
+      }
+      return totalCost;
+    };
+
+    // cart-thead
+    const thead = document.createElement("div");
+    thead.classList.add("cart-thead");
+    thead.innerHTML = `<div class="cart-tr">
+        <div class="cart-th">Sản phẩm</div>
+        <div class="cart-th">Giá</div>
+        <div class="cart-th">S.lượng</div>
+        <div class="cart-th">Tổng</div>
+        <div class="cart-th"></div>
+        </div>`;
+
+    // cart-tbody
+    const tbody = document.createElement("div");
+    tbody.classList.add("cart-tbody");
+
+    // Mỗi item tương ứng một hàng trong giỏ
+    for (item of cart) {
+      // Cột đầu tiên chứa ảnh và tên mặt hàng
+      const columnOfProduct = document.createElement("div");
+      columnOfProduct.classList.add("cart-td", "cart-product");
+      columnOfProduct.innerHTML = `<div class="cart-product-image">
+          <img src="${item.image}" alt="${item.title}">
+          </div>
+          <div class="cart-product-name">${item.title}</div>`;
+
+      // cột thứ hai chứa giắ mặt hàng
+      const columnOfPrice = document.createElement("div");
+      columnOfPrice.classList.add("cart-td");
+      columnOfPrice.innerText = intToPriceString(item.newPrice);
+
+      // cột thứ ba để người dùng chọn số lượng cần mua
+      const columnOfQuantity = document.createElement("div");
+      columnOfQuantity.classList.add("cart-td");
+      columnOfQuantity.innerHTML = `<div class="cart-quantity">
+          <input type="number" class="quantity" value="1" min="1" max="100">
+          </div>`;
+
+      // cột thứ tư là tổng giá của mặt hàng = số lượng * giá
+      const columnOfTotal = document.createElement("div");
+      columnOfTotal.id = "total-cost";
+      columnOfTotal.classList.add("cart-td");
+      columnOfTotal.innerText = intToPriceString(item.newPrice);
+
+      // cột thứ 5 chứa nút để người dùng xóa mặt hàng
+      const deleteItem = document.createElement("div");
+      deleteItem.classList.add("cart-td");
+      deleteItem.innerHTML =
+        '<ion-icon class="cart-delete-item" name="trash-outline"></ion-icon>';
+
+      // hàng hoàn chỉnh
+      const rowOfItem = document.createElement("div");
+      rowOfItem.id = `${item.id}`;
+      rowOfItem.classList.add("cart-tr");
+      rowOfItem.append(
+        columnOfProduct,
+        columnOfPrice,
+        columnOfQuantity,
+        columnOfTotal,
+        deleteItem
+      );
+
+      const quantity = rowOfItem.querySelector(`.quantity`);
+
+      // Sử dụng một hàm ẩn danh để lưu trữ giá của mặt hàng, khi người dùng thay đổi số lượng
+      // thì tổng giá tự động thay đổi
+      (function (price, totalElement) {
+        quantity.addEventListener("input", () => {
+          totalElement.innerText = intToPriceString(price * quantity.value);
+          const finalTotalCost = cartTable.querySelector("#final-total-cost");
+          if (finalTotalCost) {
+            finalTotalCost.innerText = intToPriceString(totalCosting());
+          }
+        });
+      })(item.newPrice, columnOfTotal);
+
+      // Thêm sự kiện xóa mặt hàng
+      rowOfItem.addEventListener("click", (event) => {
+        if (
+          event.target.closest(".cart-delete-item") &&
+          confirm("Bạn có chắc muốn xóa sản phẩm này?")
+        ) {
+          for (let i = 0; i < cart.length; ++i) {
+            if (cart[i].id === rowOfItem.id) {
+              cart.splice(i, 1);
+              localStorage.setItem("cart", JSON.stringify(cart));
+              break;
+            }
+          }
+
+          // nếu giỏ hàng không còn gì
+          if (cart.length === 0) {
+            document.querySelector(".full-screen-box.cart-section").remove();
+            showCartSection();
+          } else {
+            rowOfItem.remove();
+            const finalTotalCost = cartTable.querySelector("#final-total-cost");
+            if (finalTotalCost) {
+              finalTotalCost.innerText = intToPriceString(totalCosting());
+            }
+          }
+        }
+      });
+
+      // thêm hàng vào giỏ hàng
+      tbody.append(rowOfItem);
+    }
+
+    // cart table
+    const cartTable = document.createElement("div");
+    cartTable.classList.add("cart-table");
+    cartTable.append(thead, tbody);
+
+    cartContainer.append(cartTable);
+
+    // cart-tfoot
+    const tfoot = document.createElement("div");
+    tfoot.classList.add("cart-tfoot");
+    tfoot.innerHTML = `<div class="cart-tr">
+        <div class="cart-th"></div>
+        <div class="cart-th"></div>
+        <div class="cart-th"></div>
+        <div id="final-total-cost" class="cart-th">${intToPriceString(
+          totalCosting()
+        )}</div>
+        <div class="cart-th"></div>
+        </div>`;
+    cartTable.append(tfoot);
+
+    // cart-options
+    const deleteAllItems = document.createElement("button");
+    deleteAllItems.classList.add("delete-all-items");
+    deleteAllItems.innerText = "Xóa tất cả";
+    deleteAllItems.addEventListener("click", () => {
+      if (confirm("Bạn có chắc muốn xóa tất cả sản phẩm trong giỏ???")) {
+        localStorage.removeItem("cart");
+        cartSection.remove();
+        showCartSection();
+      }
+    });
+
+    const placeAnOrder = document.createElement("button");
+    placeAnOrder.classList.add("place-an-order");
+    placeAnOrder.innerText = "Chốt đơn ngay <3";
+    placeAnOrder.addEventListener("click", () => {
+      // tạo các thuộc tính cho bill
+      const customer = JSON.parse(localStorage.getItem("activeUser"));
+      const finalTotalCost = totalCosting();
+      const d = new Date();
+      const orderDate = `${d.getDate()}-${d.getMonth() + 1}-${d.getFullYear()}`;
+      let orderInformation = "";
+      const allItems = cartSection.querySelectorAll(".cart-tbody .cart-tr");
+      for (item of allItems) {
+        const itemName = item.querySelector(".cart-product-name").innerText;
+        const itemQuantity = item.querySelector(".quantity").value;
+        orderInformation += `${itemQuantity} x ${itemName}; `;
+      }
+
+      // tạo ra bill
+      let bills = [];
+      if (localStorage.getItem("bills")) {
+        bills = JSON.parse(localStorage.getItem("bills"));
+      }
+      const bill = {
+        id: bills.length,
+        orderInformation: orderInformation.trim(),
+        finalTotalCost: finalTotalCost,
+        customer: customer,
+        orderDate: orderDate,
+        status: "Chưa xử lý",
+      };
+
+      // cập nhật bills lên localStorage
+      bills.unshift(bill);
+      localStorage.setItem("bills", JSON.stringify(bills));
+
+      // xóa cart và cập nhật lại màn hình
+      alert(
+        "Đặt hàng thành công! Đơn hàng của bạn sẽ được phê duyệt trong 1 giờ. Cảm ơn bạn đã tin tưởng BinaryBook <3!!!"
+      );
+      localStorage.removeItem("cart");
+      cartSection.remove();
+      showCartSection();
+    });
+
+    const cartOptions = document.createElement("div");
+    cartOptions.classList.add("cart-options");
+    cartOptions.append(deleteAllItems, placeAnOrder);
+
+    cartContainer.append(cartOptions);
+  }
+
+  // Nếu đã có lịch sử đặt hàng
+  if (localStorage.getItem("bills") && localStorage.getItem("bills") !== "[]") {
+    // Kiểm tra xem có bill nào thuộc về người dùng hiện tại hay không
+    const temp = JSON.parse(localStorage.getItem("bills"));
+    const bills = temp.filter(
+      (bill) => JSON.stringify(bill.customer) === JSON.stringify(activeUser)
+    );
+
+    if (bills.length > 0) {
+      const orderHistory = document.createElement("div");
+      orderHistory.classList.add("oh-ctn");
+      orderHistory.innerHTML = `<h2 class="oh-title">Xem lịch sử đặt hàng của bạn ở đây</h2>
+          <div class="oh-table">
+            <div class="oh-thead">
+              <div class="oh-tr">
+              <div class="oh-th">Đơn hàng gồm</div>
+              <div class="oh-th">Tổng tiền</div>
+              <div class="oh-th">Ngày đặt</div>
+              <div class="oh-th">Trạng thái</div>
+            </div>
+          </div>
+            <div class="oh-tbody"></div>
+          </div>
+      `;
+      const orderTable = orderHistory.querySelector(".oh-table");
+
+      const orderTbody = orderHistory.querySelector(".oh-tbody");
+      // đưa các bill vào bảng
+      for (bill of bills) {
+        // Cột đầu tiên chứa thông tin đơn
+        const columnOfOrderInformation = document.createElement("div");
+        columnOfOrderInformation.classList.add("oh-td");
+        columnOfOrderInformation.style.fontWeight = "bold";
+        columnOfOrderInformation.style.lineHeight = "1.25";
+        columnOfOrderInformation.innerText = bill.orderInformation;
+
+        // cột thứ hai chứa tổng tiền
+        const columnOfFinalTotalCost = document.createElement("div");
+        columnOfFinalTotalCost.classList.add("oh-td");
+        columnOfFinalTotalCost.innerText = intToPriceString(
+          bill.finalTotalCost
+        );
+
+        // cột thứ ba chứa ngày đặt
+        const columnOfOrderDate = document.createElement("div");
+        columnOfOrderDate.classList.add("oh-td");
+        columnOfOrderDate.innerText = bill.orderDate;
+
+        // cột thứ tư chứa trạng thái
+        const columnOfStatus = document.createElement("div");
+        columnOfStatus.classList.add("oh-td");
+        columnOfStatus.innerText = bill.status;
+
+        // hàng hoàn chỉnh
+        const rowOfBill = document.createElement("div");
+        rowOfBill.classList.add("oh-tr");
+        rowOfBill.append(
+          columnOfOrderInformation,
+          columnOfFinalTotalCost,
+          columnOfOrderDate,
+          columnOfStatus
+        );
+
+        orderTbody.append(rowOfBill);
+      }
+
+      orderTable.append(orderTbody);
+      cartSection.append(orderHistory);
+    }
+  }
+
+  // Thêm sự kiện cho nút close
+  closeBtn.addEventListener("click", () => {
+    cartSection.remove();
+  });
+};
+
+// PHẦN NÀY ĐỂ KIỂM TRA ĐĂNG NHẬP
+const checkSignin = () => {
+  const getActiveUser = localStorage.getItem("activeUser");
+  const headerNav = document.querySelector(".header-nav-area");
+  // Nếu đã đăng nhập
+  if (getActiveUser) {
+    const activeUser = JSON.parse(getActiveUser);
+    // nếu là admin
+    if (activeUser.username === "admin") {
+      headerNav.innerHTML = `<span href="" class="navigation" id="logout">
+          <ion-icon name="log-out-outline"></ion-icon>
+        </span>
+        <span href="" class="navigation" id="settings">
+          <ion-icon name="settings-outline"></ion-icon>
+        </span>
+        <span href="" class="navigation" id="search">
+          <ion-icon name="search-outline"></ion-icon>
+        </span>
+        <span href="" class="navigation" id="cart">
+          <ion-icon name="cart-outline"></ion-icon>
+        </span>
+      `;
+    }
+    // nếu không phải admin
+    else {
+      headerNav.innerHTML = `<span href="" class="navigation" id="logout">
+          <ion-icon name="log-out-outline"></ion-icon>
+        </span>
+        <span href="" class="navigation" id="search">
+          <ion-icon name="search-outline"></ion-icon>
+        </span>
+        <span href="" class="navigation" id="cart">
+          <ion-icon name="cart-outline"></ion-icon>
+        </span>
+      `;
+    }
+  }
+  //Nếu chưa đăng nhập
+  else {
+    // Thêm sự kiện cho nút đăng nhập
+    headerNav.querySelector("#signin").addEventListener("click", (event) => {
+      event.preventDefault();
+      showSigninSection();
+    });
+  }
+
+  // Thêm sự kiện cho nút giỏ hàng
+  document.querySelector(".header").addEventListener("click", (event) => {
+    event.preventDefault();
+    const cart = event.target.closest("#cart");
+    const toCart = event.target.closest("#to-cart");
+    if (cart || toCart)
+      if (getActiveUser) showCartSection();
+      else alert("Hãy đăng nhập để mở giỏ hàng của bạn!");
+  });
+
+  // Thêm sự kiện cho nút đăng xuất và nút quản trị của admin
+  headerNav.addEventListener("click", (event) => {
+    const logout = event.target.closest("#logout");
+    const settings = event.target.closest("#settings");
+    if (logout) {
+      if (confirm("Bạn có chắc muốn đăng xuất? Chúng tôi sẽ rất nhớ bạn :((")) {
+        localStorage.removeItem("activeUser");
+        localStorage.removeItem("cart");
+        window.location.href = "index.html";
+      }
+    }
+    if (settings) {
+      window.location.href = "admin/management.html";
+    }
+  });
+
+  // Thêm sự kiện khi người dùng click vào hộp quà
+  document.querySelector("#gift-clicked").addEventListener("click", (event) => {
+    event.preventDefault();
+    document.querySelector(".hide-screen").style.display = "block";
+
+    const closeBtn = document.createElement("button");
+    closeBtn.classList.add("signin-close-button");
+    closeBtn.innerText = "+";
+
+    const giftCLicked = document.createElement("div");
+    giftCLicked.classList.add("gift-clicked", "normal-box");
+    giftCLicked.innerHTML = `<p>Nhập email của bạn và nhận giảm giá 15% cho đơn hàng tiếp theo!!!</p>
+        <input id="gift-email" type="email" placeholder="Chúng tôi sẽ gửi phiếu giảm giá đến email này">
+        <button class="gift-receive">Nhận ưu đãi ngay :))</button>
+        <button class="gift-reject">Từ chối ưu đãi này :((</button>`;
+    giftCLicked.prepend(closeBtn);
+
+    headerNav.append(giftCLicked);
+
+    // Thêm sự kiện cho nút đóng
+    closeBtn.addEventListener("click", () => {
+      document.querySelector(".hide-screen").style.display = "none";
+      giftCLicked.remove();
+    });
+
+    // Thêm sự kiện cho nút nhận ưu đãi
+    giftCLicked.querySelector(".gift-receive").addEventListener("click", () => {
+      if (!document.querySelector("#gift-email").value) {
+        alert("Vui lòng nhập email và thực hiện lại");
+        return;
+      }
+
+      alert(
+        "Chúng tôi đã gửi Phiếu giảm giá cho bạn. Đừng quên kiểm tra thư mục spam nếu bạn không tìm thấy nó!"
+      );
+      document.querySelector(".hide-screen").style.display = "none";
+      giftCLicked.remove();
+    });
+
+    // Thêm sự kiện cho nút từ chối ưu đãi
+    giftCLicked.querySelector(".gift-reject").addEventListener("click", () => {
+      alert(
+        "Bạn biết gì không? BinaryBook không ngừng nổ lực để đáp ứng tất cả mong đợi của khách hàng!"
+      );
+      document.querySelector(".hide-screen").style.display = "none";
+      giftCLicked.remove();
+    });
+  });
+};
 
 // GỌI CÁC HÀM CẦN THIẾT
 createProducts();
 createAdmin();
-
-// Thêm sự kiện cho nút tìm kiếm
-document.querySelector("#search").addEventListener("click", (event) => {
-  event.preventDefault();
-  showSearchResults([]);
-});
-// Thêm sự kiện cho nút đăng nhập
-document.querySelector("#signin").addEventListener("click", (event) => {
-  event.preventDefault();
-  showSigninSection();
-});
 
 // PHẦN NÀY ĐỂ HIỂN THỊ SLIDESHOW
 let slideshowImgIdx = 1;
@@ -929,6 +1531,7 @@ const changeImg = () => {
 // PHẦN NÀY ĐỂ THAY ĐỔI TRÊN header-nav-area
 const changeHeaderNavArea = () => {
   window.addEventListener("resize", () => {
+    if (!document.querySelector("#signin")) return;
     const width = window.innerWidth;
     const signin = document.querySelector("#signin");
     if (width <= 768 && signin.classList.contains("signin")) {
@@ -958,4 +1561,11 @@ window.onload = () => {
   addShowMoreDetailsEvent(".main");
   changeImg();
   changeHeaderNavArea();
+  checkSignin();
+
+  // Thêm sự kiện cho nút tìm kiếm
+  document.querySelector("#search").addEventListener("click", (event) => {
+    event.preventDefault();
+    showSearchResults([]);
+  });
 };

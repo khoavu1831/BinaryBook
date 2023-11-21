@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="styles/app.css" />
   </head>
   <body>
+    <div class="hide-screen" style="display: none;"></div>
+
     <header class="header">
       <div class="pre-header">
         <p>
@@ -19,7 +21,7 @@
           hiện thực.
         </p>
         <p>
-          Hãy <a href="">nhận các cuốn sách trong giỏ hàng</a>, rồi thực hiện
+          Hãy <a href="" id="to-cart">nhận các cuốn sách trong giỏ hàng</a>, rồi thực hiện
           bước đầu tiên hướng đến mục tiêu của bạn!
         </p>
       </div>
@@ -33,7 +35,7 @@
         <nav class="header-nav-area">
           <span href="" class="signin" id="signin">Đăng nhập</span>
           <span href="" class="navigation" id="search"><ion-icon name="search-outline"></ion-icon></span>
-          <span href="" class="navigation"><ion-icon name="cart-outline"></ion-icon></span>
+          <span href="" class="navigation" id="cart"><ion-icon name="cart-outline"></ion-icon></span>
         </nav>
       </div>
     </header>
@@ -62,6 +64,9 @@
         <nav class="pagination"></nav>
       </div>
 
+      <div class="needsclick">
+        <ion-icon id="gift-clicked" name="gift" class="gift-icon"></ion-icon>
+      </div>
     </main>
 
     <footer class="footer">
