@@ -141,9 +141,30 @@ const createProducts = () => {
         category: "c/cpp",
         otherDetails: ["O'Reilly Media", 629, 2012],
       },
+      {
+        id: "bs14",
+        image: "images/css-in-depth.jpg",
+        title: "CSS in Depth",
+        authors: ["Keith J. Grant"],
+        oldPrice: 1199000,
+        newPrice: 1079000,
+        category: "css",
+        otherDetails: ["Manning Publications", 375, 2018],
+      },
+      {
+        id: "bs15",
+        image: "images/automate-the-boring-stuff.jpg",
+        title: "Automate the Boring Stuff with Python",
+        authors: ["Al Sweigart"],
+        oldPrice: 1079000,
+        newPrice: 999000,
+        category: "python",
+        otherDetails: ["No Starch Press", 592, 2023],
+      },
     ];
     localStorage.setItem("bestSellerBooks", JSON.stringify(bestSellerBooks));
   }
+
   if (localStorage.getItem("wellKnownBooks") === null) {
     // Danh sách các sản phẩm của phần Well-known
     const wellKnownBooks = [
@@ -172,13 +193,12 @@ const createProducts = () => {
       {
         id: "wk3",
         image: "images/eloquent-javascript.jpg",
-        title:
-          "Eloquent Javascript, 3rd Edition: A Modern Introduction to Programming",
+        title: "Eloquent Javascript: A Modern Introduction to Programming",
         authors: ["Marijn Haverbeke"],
         oldPrice: 979000,
         newPrice: 909000,
         category: "javascript",
-        otherDetails: [""],
+        otherDetails: ["No Starch Press", 472, 2018],
       },
       {
         id: "wk4",
@@ -262,6 +282,55 @@ const createProducts = () => {
         newPrice: 909000,
         category: "java",
         otherDetails: ["McGraw-Hill Companies", 752, 2022],
+      },
+      {
+        id: "wk12",
+        image: "images/javascript-the-definitive-guide.jpg",
+        title:
+          "Javascript: The Definitive Guide - Master the World's Most-Used Programming Language",
+        authors: ["David Flanagan"],
+        oldPrice: 1929000,
+        newPrice: 1789000,
+        category: "javascript",
+        otherDetails: ["O'Reilly Media", 704, 2020],
+      },
+      {
+        id: "wk13",
+        image: "images/postgresql-up-and-running.jpg",
+        title:
+          "PostgreSQL: Up and Running - A Practical Guide to the Advanced Open Source Database",
+        authors: ["Leo Hsu", "Regina Obe"],
+        oldPrice: 1329000,
+        newPrice: 1269000,
+        category: "database",
+        otherDetails: ["O'Reilly Media", 312, 2017],
+      },
+      {
+        id: "wk14",
+        image: "images/elements-reusable-object-oriented.jpg",
+        title: "Design Patterns: Elements of Reusable Object-Oriented Software",
+        authors: [
+          "Erich Gamma",
+          "Richard Helm",
+          "Ralph Johnson",
+          "John Vlissides",
+          "Grady Booch",
+        ],
+        oldPrice: 1549000,
+        newPrice: 1449000,
+        category: "design-pattern",
+        otherDetails: ["Addison-Wesley Professional", 416, 1994],
+      },
+      {
+        id: "wk15",
+        image: "images/learning-typescript.jpg",
+        title:
+          "Learning TypeScript: Enhance Your Web Development Skills Using Type-Safe JavaScript",
+        authors: ["Josh Goldberg"],
+        oldPrice: 1349000,
+        newPrice: 1249000,
+        category: "typescript",
+        otherDetails: ["O'Reilly Media", 318, 2022],
       },
     ];
     localStorage.setItem("wellKnownBooks", JSON.stringify(wellKnownBooks));
