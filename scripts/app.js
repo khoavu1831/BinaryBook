@@ -683,7 +683,7 @@ const showSearchResults = (books) => {
       <option value="regex">Regex</option>
       <option value="typescript">TypeScript</option>
     </select>
-    <input class="filter-price" type="number" min="0" id="from-price" placeholder="Từ (VNĐ)"> — 
+    <input class="filter-price" type="number" min="0" id="from-price" placeholder="Từ (VNĐ)">—
     <input class="filter-price" type="number" min="0" id="to-price" placeholder="Đến (VNĐ)">`;
 
   searchForm.addEventListener("submit", (event) => {
@@ -796,7 +796,7 @@ const showSigninSection = () => {
 
   const header = document.createElement("header");
   header.classList.add("signin-header");
-  header.append(title, closeBtn);
+  header.append(title);
 
   // signin-main
   const form = document.createElement("form");
@@ -823,14 +823,17 @@ const showSigninSection = () => {
 
   const signinSection = document.createElement("section");
   signinSection.classList.add("signin-section", "normal-box");
-  signinSection.append(header, main, footer);
+  signinSection.append(closeBtn, header, main, footer);
   document.body.prepend(signinSection);
 
   closeBtn.addEventListener("click", () => {
     signinSection.remove();
     document.querySelector(".hide-screen").style.display = "none";
   });
+
+  // sự kiện của nút Đăng nhập ngay
   signinSection.querySelector(".signin-btn").addEventListener("click", signin);
+
   toSignup.addEventListener("click", () => {
     signinSection.remove();
     showSignupSection();
@@ -889,7 +892,7 @@ const signup = (event) => {
     const invalidPhoneNumber = document.createElement("li");
     invalidPhoneNumber.id = "invalid-phone-number";
     invalidPhoneNumber.innerHTML =
-      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Số điện thoại không hợp lệ! Xin lưu ý rằng bạn không thể qua mặt chúng tôi bằng cách nhập một số điện thoại di động không tồn tại ở Việt Nam!!!';
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Số điện thoại không hợp lệ! Xin lưu ý rằng bạn không thể vượt qua lớp bảo mật của chúng tôi bằng cách nhập một số điện thoại di động không tồn tại ở Việt Nam!!!';
 
     errorsArea.append(invalidPhoneNumber);
     errorsArea.style.display = "block";
@@ -910,7 +913,7 @@ const signup = (event) => {
     const invalidUsername = document.createElement("li");
     invalidUsername.id = "invalid-username";
     invalidUsername.innerHTML =
-      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Tên đăng nhập nên có độ dài tối thiểu 6 và tối đa 18 kí tự, chỉ bao gồm chữ cái và số, kí tự đầu tiên phải là một chữ số!';
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Tên đăng nhập nên có độ dài tối thiểu 6 và tối đa 18 kí tự, chỉ bao gồm chữ cái và số, kí tự đầu tiên phải là một chữ cái!';
 
     errorsArea.append(invalidUsername);
     errorsArea.style.display = "block";
@@ -931,7 +934,7 @@ const signup = (event) => {
     const invalidPassword = document.createElement("li");
     invalidPassword.id = "invalid-password";
     invalidPassword.innerHTML =
-      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Mật khẩu nên có độ dài tối thiểu 8 và tối đa 24 kí tự, bao gồm chữ cả chữ cái, số và kí tự đặc biệt!';
+      '<ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>Mật khẩu nên có độ dài tối thiểu 8 và tối đa 24 kí tự!';
 
     errorsArea.append(invalidPassword);
     errorsArea.style.display = "block";
@@ -1020,7 +1023,7 @@ const showSignupSection = () => {
 
   const header = document.createElement("header");
   header.classList.add("signin-header");
-  header.append(title, closeBtn);
+  header.append(title);
 
   // signup-main
   const form = document.createElement("form");
@@ -1055,13 +1058,14 @@ const showSignupSection = () => {
 
   const signupSection = document.createElement("section");
   signupSection.classList.add("signin-section", "normal-box");
-  signupSection.append(header, main, footer);
+  signupSection.append(closeBtn, header, main, footer);
   document.body.prepend(signupSection);
 
   closeBtn.addEventListener("click", () => {
     signupSection.remove();
     document.querySelector(".hide-screen").style.display = "none";
   });
+
   signupSection.querySelector(".signin-btn").addEventListener("click", signup);
   toSignin.addEventListener("click", () => {
     signupSection.remove();
@@ -1454,6 +1458,55 @@ const checkSignin = () => {
     if (settings) {
       window.location.href = "admin/management.html";
     }
+  });
+
+  // Thêm sự kiện khi người dùng click vào hộp quà
+  document.querySelector("#gift-clicked").addEventListener("click", (event) => {
+    event.preventDefault();
+    document.querySelector(".hide-screen").style.display = "block";
+
+    const closeBtn = document.createElement("button");
+    closeBtn.classList.add("signin-close-button");
+    closeBtn.innerText = "+";
+
+    const giftCLicked = document.createElement("div");
+    giftCLicked.classList.add("gift-clicked", "normal-box");
+    giftCLicked.innerHTML = `<p>Nhập email của bạn và nhận giảm giá 15% cho đơn hàng tiếp theo!!!</p>
+        <input id="gift-email" type="email" placeholder="Chúng tôi sẽ gửi phiếu giảm giá đến email này">
+        <button class="gift-receive">Nhận ưu đãi ngay :))</button>
+        <button class="gift-reject">Từ chối ưu đãi này :((</button>`;
+    giftCLicked.prepend(closeBtn);
+
+    headerNav.append(giftCLicked);
+
+    // Thêm sự kiện cho nút đóng
+    closeBtn.addEventListener("click", () => {
+      document.querySelector(".hide-screen").style.display = "none";
+      giftCLicked.remove();
+    });
+
+    // Thêm sự kiện cho nút nhận ưu đãi
+    giftCLicked.querySelector(".gift-receive").addEventListener("click", () => {
+      if (!document.querySelector("#gift-email").value) {
+        alert("Vui lòng nhập email và thực hiện lại");
+        return;
+      }
+
+      alert(
+        "Chúng tôi đã gửi Phiếu giảm giá cho bạn. Đừng quên kiểm tra thư mục spam nếu bạn không tìm thấy nó!"
+      );
+      document.querySelector(".hide-screen").style.display = "none";
+      giftCLicked.remove();
+    });
+
+    // Thêm sự kiện cho nút từ chối ưu đãi
+    giftCLicked.querySelector(".gift-reject").addEventListener("click", () => {
+      alert(
+        "Bạn biết gì không? BinaryBook không ngừng nổ lực để đáp ứng tất cả mong đợi của khách hàng!"
+      );
+      document.querySelector(".hide-screen").style.display = "none";
+      giftCLicked.remove();
+    });
   });
 };
 
