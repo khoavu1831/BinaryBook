@@ -1,0 +1,453 @@
+*{
+	margin: 0;
+	padding: 0;
+	border: none;
+	box-sizing: border-box;
+}
+body{
+	overflow: auto;
+}
+
+#wrap{
+	display: flex;
+	flex-wrap: wrap;
+}
+/*LEFT MENU*/
+#leftmenu{
+	width: 80px;
+	overflow: hidden;
+	height: 100vh;
+	background-color: rgb(211, 4, 80);
+	position: fixed;
+	transition: 0.5s;
+	border-top-right-radius: 10px;
+	border-bottom-right-radius: 10px;
+}
+
+#leftmenu .logo{
+	width: 250px;
+	height: 80px;
+	background-color: rgb(211, 4, 80);
+	text-align: center;
+	margin: 30px 0;
+}
+
+#leftmenu .logo img{
+	height: 100%;
+}
+
+#leftmenu ul li{
+	width: 100%;
+	display: flex;
+	list-style-type: none;
+	border-bottom: 1px solid rgba(255,255,255,0.4);
+	
+}
+
+#leftmenu ul li:last-child{
+	border: none;
+}
+
+#leftmenu ul li:hover{
+	background: #ddd;
+	transition: 0.3s;
+}
+
+#leftmenu ul li img{
+	width: 50px;
+	height: 50px;
+	padding-left: 20px;
+}
+
+#leftmenu:hover ul li a{
+	opacity: 1;
+	font-family: "Roboto Slab", sans-serif;
+}
+
+
+#leftmenu ul li a{
+	text-decoration: none;
+	color: #fff;
+	font-size: 14pt;
+	display: inline-block;
+	width: calc(100% - 50px);
+	height: 50px;
+	line-height: 50px;
+	padding-left: 50px;
+	opacity: 0;
+	font-family: "Roboto Condensed" , sans-serif;
+}
+
+#leftmenu ul li a:hover{
+	color: #000;
+	transition: 0.2s;
+}
+
+#leftmenu:hover{
+	width: 250px;
+}
+
+#account{
+	background-color: #fff;
+	height: 70px;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	position: relative;
+	bottom: -40%;
+}
+#account #hello{
+	margin-left: auto;
+	margin-right: 20px;
+	padding: 10px;
+	font-size: 14pt;
+	font-weight: bold;
+	position: relative;
+	background-color: #a4b0be;
+	border-radius: 999px;
+	display: flex;
+	align-items: flex-end;
+}
+#account #hello:hover button{
+	opacity: 1;
+}
+#account #hello button{
+	display: block;
+	text-align: center;
+	width: 100%;
+	height: 100%;
+	background-color: #2f3542;
+	border: 3px solid #2f3542;
+	color: #fff;
+	font-size: 14pt;
+	line-height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	border-radius: 999px;
+	outline: none;
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.5s;
+}
+#account #hello button:active{
+	background-color: #fff;
+	color: #2f3542;
+}
+
+#maincontent{
+	background: rgb(255,50,125);
+	background: linear-gradient(0deg, rgba(255,50,125,0.5) 0%, rgba(255,255,255,0.3) 50%, rgba(40,90,255,0.5) 100%);
+	width: calc(100vw - 70px);
+	margin-left: 70px;
+	height: 100%;
+}
+
+#content{
+	width: 100%;
+	min-height: 100vh;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	
+}
+/*NAV*/
+#nav{
+	background-color: linear-gradient(0deg, rgba(255,50,125,0.5) 0%, rgba(255,255,255,0.3) 50%, rgba(40,90,255,0.5) 100%);
+	height: 100px;
+}
+#nav .nav_sub{
+	height: 100px;
+	width: 40%;
+	background-color: #cce0fa;
+	margin: 20px auto;
+	border-radius: 999px;
+}
+#nav .nav_sub h1{
+	line-height: 100px;
+	text-align: center;
+	font-family: "IBM Plex Sans" , sans-serif;
+	font-size: 30px;
+	color: rgb(82, 72, 72);
+}
+#nav .nav_sub img{
+	height: 100%;
+	float: left;
+	border-radius: 999px;
+}
+/*NAV*/
+/*CONTENT-LEFT SECTION*/
+#content #leftsection{
+	width: 100%;
+	padding: 40px 40px 0px;
+	height:auto ;
+}
+#content #leftsection #maintable{
+	width: 100%;
+	min-height: 55vh;
+	background-color: #e9d0a2;
+	box-shadow: 0 0 20px 2px rgba(0,0,0,0.9);
+	padding: 30px 50px 10px ;
+	overflow-x: auto;
+	border-radius: 3px;
+}
+#content #leftsection #maintable h1{
+	text-align: center;
+	margin-bottom: 20px;
+	color: rgb(197, 53, 77);
+	font-family: "Agbalumo", sans-serif;
+	font-size: 50px;
+}
+#content #leftsection #maintable table,th,td{
+	border: 1px solid rgba(0,0,0,0.4);
+}
+#content #leftsection #maintable table{
+	width: 100%;
+	border-collapse: collapse;
+	background-color: rgb(238, 209, 229);
+}
+#content #leftsection #maintable table#billlist tr:not(:first-child){
+	cursor: pointer;
+}
+#content #leftsection #maintable table#billlist tr:not(:first-child):hover{
+	background-color: #ced6e0;
+}
+#content #leftsection #maintable th{
+	background-color: rgb(115, 82, 207);
+    color: white;
+    height: 35px;
+	padding: 0 5px;
+	font-family: "Roboto Mono", sans-serif;
+}
+#content #leftsection #maintable td{
+    height: 30px;
+    line-height: 30px;
+    padding: 0px 10px;
+	font-family: "Roboto Mono", sans-serif;
+}
+#content #leftsection #maintable td:last-child{
+    text-align: center;
+}
+/*CONTENT-LEFT SECTION*/
+/*CONTENT-RIGHT SECTION*/
+#content #rightsection{
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	padding: 40px 40px 0px;
+}
+#content #rightsection .subsection{
+	width: 100%;
+	background-color: #e9d0a2;
+	box-shadow: 0 0 20px 2px rgba(0,0,0,0.9);
+	margin-bottom: 40px;
+	padding: 20px 50px;
+	border-radius: 3px;
+}
+#content #rightsection .subsection h1{
+	text-align: center;
+	margin-bottom: 10px;
+	color: rgb(197, 53, 77);
+	font-family: "Agbalumo", sans-serif;
+	font-size: 50px;
+}
+#content #rightsection .subsection h2{
+	text-align: center;
+	margin-bottom: 10px;
+	color: rgb(197, 53, 77);
+	font-family: "Agbalumo", sans-serif;
+	font-size: 50px;
+}
+#content #rightsection .subsection form{
+	width: 300px;
+	margin: 0 auto;
+}
+#content #rightsection .subsection label{
+	font-size: 14pt;
+	cursor: pointer;
+}
+#content #rightsection .subsection input{
+	display: block;
+	width: 300px;
+	height: 30px;
+	line-height: 30px;
+	font-size: 13pt;
+	border: 3px solid rgba(0,0,0,1);
+	margin: 5px 0 20px 0px;
+}
+#content #rightsection .subsection input:focus{
+	outline: none;
+}
+#content #rightsection .subsection select{
+	height: 30px;
+	width: 173px;
+	border: 1px solid rgba(0,0,0,.2);
+	border-bottom: 2px solid #000;
+	margin: 5px 0 20px 20px;
+}
+#content #rightsection .subsection #imgadd{
+	width: 150px;
+	margin: 0 auto;
+	display: block;
+}
+#content #rightsection .subsection button{
+	background-color: rgb(222, 218, 236);
+	border: 2px solid black;
+	border-radius: 999px;
+	width: 100px;
+	height: 50px;
+	color: black;
+	font-size: 14pt;
+	cursor: pointer;
+	box-shadow: 4px 5px;
+	display: inline-block;
+	margin: 0 20px 0 20px;
+	font-family: "Roboto Slab" , sans-serif;
+}
+#content #rightsection .subsection button:hover{
+	border: 2px solid rgba(0, 0, 0, 0.377);
+	color: #0066ff;
+	background-color: rgb(255,50,125);
+}
+/*TABLE SEARCH*/
+#content #rightsection table,th,td{
+	border: 1px solid rgba(0,0,0,0.4);
+	background-color: rgb(238, 209, 229);
+}
+#content #rightsection table{
+	width: 100%;
+	border-collapse: collapse;
+}
+#content #rightsection th{
+	background-color: rgb(115, 82, 207);
+    color: white;
+    height: 35px;
+	padding: 0 5px;
+	font-family: "Roboto Mono", sans-serif;
+}
+#content #rightsection td{
+    height: 30px;
+    line-height: 30px;
+    padding: 0px 10px;
+	font-family: "Roboto Mono", sans-serif;
+}
+#content #rightsection td:last-child{
+    text-align: center;
+}
+/*CONTENT-RIGHT SECTION*/
+/*ANIMATION*/
+@keyframes fadein {
+    from {top: 0; opacity: 0;}
+    to {top: 30px; opacity: 1;}
+}
+@keyframes fadeout {
+    from {top: 30px; opacity: 1;}
+    to {top: 0; opacity: 0;}
+}
+@keyframes topdown{
+	0% {transform: translateY(-800px)}
+	100% {transform: translateY(0)}
+}
+@media only screen and (min-width: 901px)and (max-width: 1360px) {
+    #content #leftsection{
+		width: 100%;
+	}
+	#content #rightsection{
+		width: 100%;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+	}
+	#content #rightsection .subsection{
+		width: 48%;
+		padding: 10px;
+	
+	}
+}
+@media only screen and (min-width: 601px) and (max-width: 1400px) {
+	#leftmenu{
+		display: none;
+	}
+	#nav #btnmenu{
+		display: block;
+	}
+	#maincontent{
+		width: 100vw;
+		margin: 0;
+	}
+    #content #leftsection{
+		width: 100%;
+		padding: 40px 20px 0px;
+	}
+	#content #leftsection #maintable{
+		padding: 20px;
+	}
+	#content #rightsection{
+		width: 100%;
+		flex-wrap: wrap;
+		padding: 40px 20px 0px;
+	}
+	#content #rightsection .subsection{
+		width: 100%;
+		padding: 10px;
+	}
+}
+@media only screen and (min-width: 0px) and (max-width: 1106px){
+	#nav .nav_sub h1{
+		display: none;
+	}
+	#nav .nav_sub {
+		width: 0;
+		transform: translateX(-50px);
+	}
+}
+@media only screen  and (min-width: 0px) and (max-width: 600px) {
+	#leftmenu{
+		display: none;
+	}
+	#nav #btnmenu{
+		display: block;
+	}
+	#maincontent{
+		width: 100vw;
+		margin: 0;
+	}
+    #content #leftsection{
+		width: 100%;
+		padding: 10px 0px;
+	}
+	#content #leftsection #maintable{
+		padding: 0px;
+		box-shadow: none;
+	}
+	#content #rightsection{
+		width: 100%;
+		flex-wrap: wrap;
+		padding: 10px 0px;
+	}
+	#content #rightsection .subsection{
+		width: 100%;
+		padding: 10px;
+		border: 2px solid #000;
+		box-shadow: none;
+	}
+}
+@media print{
+	#leftmenu, #nav, #maincontent, button{
+		display: none;
+	}
+	#modal1{
+		display: block;
+	}
+	#modal1 #info{
+		width: 100%;
+		height: 100%;
+		margin: 0;
+	}
+	#modal1 #info h4:last-of-type{
+		display: none;
+	}
+	#modal1 #info div{
+		display: none;
+	}
+}
