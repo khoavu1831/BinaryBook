@@ -1,3 +1,2 @@
 # BinaryBook
-Nhánh của Kiệt
-làm trang chủ và thêm vào các năng như đăng nhập, đăng ký, tìm + lọc sách, giỏ hàng,...
+phần user 
